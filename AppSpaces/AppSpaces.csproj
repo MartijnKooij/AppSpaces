@@ -7,4 +7,16 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Reference Include="WinMan">
+      <HintPath>..\WinMan\WinMan.dll</HintPath>
+    </Reference>
+    <Reference Include="WinMan.Windows">
+      <HintPath>..\WinMan\WinMan.Windows.dll</HintPath>
+    </Reference>
+    <Reference Include="WinMan.Windows.DllImports">
+      <HintPath>..\WinMan\WinMan.Windows.DllImports.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

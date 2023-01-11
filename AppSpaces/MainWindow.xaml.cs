@@ -1,45 +1,46 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading;
 using System.Windows.Automation;
+using WinMan;
+using WinMan.Windows;
 
 namespace AppSpaces
 {
 	public partial class MainWindow
 	{
-		// ReSharper disable InconsistentNaming
-		[DllImport("user32.dll", SetLastError = true)]
-		private static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int Width, int Height, bool Repaint);
-		// ReSharper enable InconsistentNaming
+		private IWorkspace workspace;
 
 		public MainWindow()
 		{
 			InitializeComponent();
 			Log("Started.");
 
-			Automation.AddAutomationEventHandler(
-				eventId: WindowPattern.WindowOpenedEvent,
-				element: AutomationElement.RootElement,
-				scope: TreeScope.Children,
-				eventHandler: OnWindowOpened);
-
-			Log("Listening...");
-		}
-
-		private void OnWindowOpened(object sender, AutomationEventArgs e)
-		{
-			var element = sender as AutomationElement;
-			if (element == null) return;
-
-			Log($"Window opened for {element.Current.Name} > {element.Current.NativeWindowHandle} > {element.Current.ProcessId}");
-
-			if (element.Current.Name == "Visual Studio Code")
+			workspace = new Win32Workspace();
+			workspace.WindowManaging += (s, e) =>
 			{
-				MoveWindow(new IntPtr(element.Current.NativeWindowHandle), 100, 100, 500, 500, true);
+				Log($"Window {e.Source} initially present on the workspace!");
+			};
+			workspace.WindowAdded += (s, e) =>
+			{
+				Log($"Window {e.Source} added to the workspace! {e.Source.CanMove}");
 
-				var lastError = Marshal.GetLastWin32Error();
-				Log($"Last error: {lastError}");
-			}
+				if (e.Source.Title == "Visual Studio Code")
+				{
+					e.Source.SetState(WinMan.WindowState.Restored);
+					e.Source.SetPosition(new Rectangle(100, 100, 600, 600));
+					e.Source.PositionChanged += (s, a) =>
+					{
+						Log($"VS Code moved {a.OldPosition} > {a.NewPosition}");
+					};
+				}
+			};
+			workspace.Open();
+			Log("Listening...");
 		}
 
 		private void Log(string data)
@@ -53,8 +54,7 @@ namespace AppSpaces
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			Log("Closing...");
-			Automation.RemoveAllEventHandlers();
-
+			workspace.Dispose();
 			base.OnClosing(e);
 		}
 	}
