@@ -1,6 +1,6 @@
 This project uses WinMan, its original MIT license to Veselin is listed below.
 
-I compiled the project myself as the NuGet package was not working.
+I compiled the DLLImports project myself as the NuGet package was not working withouth it...
 https://github.com/FancyWM/winman-windows
 
 MIT License

@@ -8,12 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="WinMan">
-      <HintPath>..\WinMan\WinMan.dll</HintPath>
-    </Reference>
-    <Reference Include="WinMan.Windows">
-      <HintPath>..\WinMan\WinMan.Windows.dll</HintPath>
-    </Reference>
+    <PackageReference Include="WinMan.Windows" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="WinMan.Windows.DllImports">
       <HintPath>..\WinMan\WinMan.Windows.DllImports.dll</HintPath>
     </Reference>
