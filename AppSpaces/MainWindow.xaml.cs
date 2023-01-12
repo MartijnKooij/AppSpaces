@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Windows.Automation;
 using WinMan;
 using WinMan.Windows;
 
@@ -13,34 +7,42 @@ namespace AppSpaces
 {
 	public partial class MainWindow
 	{
-		private IWorkspace workspace;
+		private readonly IWorkspace _workspace;
+		private Rectangle _currentSpace = new (100, 100, 600, 600);
 
 		public MainWindow()
 		{
 			InitializeComponent();
 			Log("Started.");
 
-			workspace = new Win32Workspace();
-			workspace.WindowManaging += (s, e) =>
+			_workspace = new Win32Workspace();
+			_workspace.WindowManaging += (s, e) =>
 			{
 				Log($"Window {e.Source} initially present on the workspace!");
 			};
-			workspace.WindowAdded += (s, e) =>
+			_workspace.WindowAdded += (s, e) =>
 			{
-				Log($"Window {e.Source} added to the workspace! {e.Source.CanMove}");
+				Log($"Window {e.Source.Title} added to the workspace!");
 
-				if (e.Source.Title == "Visual Studio Code")
+				if (e.Source.Title.Contains("Visual Studio Code"))
 				{
-					e.Source.SetState(WinMan.WindowState.Restored);
-					e.Source.SetPosition(new Rectangle(100, 100, 600, 600));
-					e.Source.PositionChanged += (s, a) =>
+					MoveToSpace(e.Source);
+					e.Source.PositionChangeEnd += (s, a) =>
 					{
 						Log($"VS Code moved {a.OldPosition} > {a.NewPosition}");
+						_currentSpace = new Rectangle(800, 300, 1400, 800);
+						MoveToSpace(e.Source);
 					};
 				}
 			};
-			workspace.Open();
+			_workspace.Open();
 			Log("Listening...");
+		}
+
+		private void MoveToSpace(IWindow window)
+		{
+			window.SetState(WinMan.WindowState.Restored);
+			window.SetPosition(_currentSpace);
 		}
 
 		private void Log(string data)
@@ -54,8 +56,21 @@ namespace AppSpaces
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			Log("Closing...");
-			workspace.Dispose();
+			_workspace.Dispose();
 			base.OnClosing(e);
+		}
+
+		private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
+		{
+			_currentSpace = new Rectangle(300, 300, 1000, 1000);
+			foreach (var window in _workspace.GetSnapshot())
+			{
+				Log($"Checking whether {window.Title} should be moved.");
+				if (window.Title.Contains("Visual Studio Code"))
+				{
+					MoveToSpace(window);
+				}
+			}
 		}
 	}
 }
