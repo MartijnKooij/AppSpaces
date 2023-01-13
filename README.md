@@ -5,9 +5,11 @@ Desktop spaces for your apps
 This is once again just a PoC based on an idea that popped in my head. Whether I will finish this or not is to be seen...
 
 ## Definitions
-- A space is an area on the screen.
-- An AppSpace in an application linked to an app and all its windows.
-- An AppSpace cannot contain any duplicate apps, 1 app can be placed in 1 space only.
+- An App is an identifier to find an app, this can be by title or executable path.
+- A Space is an area on the screen and all the Apps assigned to it.
+    An App can only be placed on a space once.
+- An AppSpace is a collection of Spaces
+    - An AppSpace cannot contain any duplicate apps, 1 app can be placed in 1 of its spaces only.
 - You can define multiple AppSpaces
 
 ## Use cases
