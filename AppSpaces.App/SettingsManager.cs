@@ -37,9 +37,7 @@ public static class SettingsManager
 
 		var settingsData = JsonSerializer.Serialize(settings, new JsonSerializerOptions
 		{
-			WriteIndented = true,
-			IgnoreReadOnlyFields = true,
-			IgnoreReadOnlyProperties = true
+			WriteIndented = true
 		});
 
 		await File.WriteAllTextAsync(settingsPath, settingsData);

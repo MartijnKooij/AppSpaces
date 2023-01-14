@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppSpaces.App", "..\AppSpaces.App\AppSpaces.App\AppSpaces.App.csproj", "{CBBBC8A6-8CEF-48CA-AC02-F7DD272DB158}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppSpaces.App", ".\AppSpaces.App\AppSpaces.App.csproj", "{CBBBC8A6-8CEF-48CA-AC02-F7DD272DB158}"
 EndProject
-Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "AppSpaces.App (Package)", "..\AppSpaces.App\AppSpaces.App (Package)\AppSpaces.App (Package).wapproj", "{9E63C288-03CD-4C79-9831-915421BCF4D0}"
+Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "AppSpaces.App (Package)", ".\AppSpaces.App (Package)\AppSpaces.App (Package).wapproj", "{9E63C288-03CD-4C79-9831-915421BCF4D0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{E07D234C-DD39-44C2-AE5A-745CC0FA9410}"
 	ProjectSection(SolutionItems) = preProject
-		..\LICENSE = ..\LICENSE
-		..\README.md = ..\README.md
-		..\Third Party License.md = ..\Third Party License.md
+		.\LICENSE = .\LICENSE
+		.\README.md = .\README.md
+		.\Third Party License.md = .\Third Party License.md
 	EndProjectSection
 EndProject
 Global
