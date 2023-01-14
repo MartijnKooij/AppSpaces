@@ -1,17 +1,25 @@
-﻿namespace AppSpaces.App;
+﻿using Windows.Storage;
+using Windows.UI.Core;
+using CommunityToolkit.WinUI.Helpers;
+using AppSpaces.App.Models;
+using H.NotifyIcon.Core;
+
+namespace AppSpaces.App;
 
 public sealed partial class App
 {
 	public static TaskbarIcon? TrayIcon { get; private set; }
 	public static Window? Window { get; set; }
+	public Settings? Settings { get; set; }
 
 	public App()
 	{
 		InitializeComponent();
 	}
 
-	protected override void OnLaunched(LaunchActivatedEventArgs args)
+	protected override async void OnLaunched(LaunchActivatedEventArgs args)
 	{
+		Settings = await SettingsManager.LoadSettings();
 		InitializeTrayIcon();
 	}
 
