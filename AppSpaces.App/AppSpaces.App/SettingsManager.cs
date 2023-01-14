@@ -9,6 +9,7 @@ public static class SettingsManager
 
 	public static async Task<Settings> LoadSettings()
 	{
+		// TODO: Setting validation
 		var settingsPath = Path.Join(Environment.SpecialFolder.LocalApplicationData.ToString(), SettingsFile);
 		if (!File.Exists(settingsPath))
 		{
@@ -29,6 +30,7 @@ public static class SettingsManager
 
 	public static async Task SaveSettings(Settings settings)
 	{
+		// TODO: Setting validation
 		var settingsPath = Path.Join(Environment.SpecialFolder.LocalApplicationData.ToString(), SettingsFile);
 		var file = new FileInfo(settingsPath);
 		file.Directory?.Create();

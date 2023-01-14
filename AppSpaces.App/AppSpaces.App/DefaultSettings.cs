@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+﻿using WinMan;
 using AppSpaces.App.Models;
 
 namespace AppSpaces.App;
@@ -26,7 +26,7 @@ public static class DefaultSettings
 								}
 							},
 							IsPrimary = true,
-							Location = new Rectangle(new Point(0, 0), new Size(1120, 1040))
+							Location = new Rectangle(0, 0, 1120, 1040)
 						},
 						new()
 						{
@@ -38,8 +38,8 @@ public static class DefaultSettings
 									SearchQuery = "Notepad"
 								}
 							},
-							IsPrimary = true,
-							Location = new Rectangle(new Point(1120, 0), new Size(800, 1040))
+							IsPrimary = false,
+							Location = new Rectangle(1120, 0, 1920, 1040)
 						}
 
 					}
