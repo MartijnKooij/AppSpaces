@@ -1,5 +1,6 @@
 ﻿using AppSpaces.App.Models;
 using H.Hooks;
+using WinMan.Windows;
 
 namespace AppSpaces.App;
 
@@ -7,6 +8,9 @@ public static class DefaultSettings
 {
 	public static async Task<Settings> Create()
 	{
+		using var workspace = new Win32Workspace();
+		workspace.Open();
+
 		var defaultId0 = Guid.NewGuid();
 		var defaultId1 = Guid.NewGuid();
 
@@ -45,7 +49,7 @@ public static class DefaultSettings
 								}
 							},
 							IsPrimary = true,
-							Location = new ScreenLocation(0, 0, 2340, 1560)
+							Location = new ScreenLocation(0, 0, workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 2, workspace.DisplayManager.PrimaryDisplay.WorkArea.Height)
 						},
 						new()
 						{
@@ -63,7 +67,7 @@ public static class DefaultSettings
 								}
 							},
 							IsPrimary = false,
-							Location = new ScreenLocation(2340, 0, 1500, 1560)
+							Location = new ScreenLocation(workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 2, 0, workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 1, workspace.DisplayManager.PrimaryDisplay.WorkArea.Height)
 						}
 					}
 				},
@@ -84,7 +88,7 @@ public static class DefaultSettings
 								}
 							},
 							IsPrimary = true,
-							Location = new ScreenLocation(0, 0, 2340, 1560)
+							Location = new ScreenLocation(0, 0, workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 2, workspace.DisplayManager.PrimaryDisplay.WorkArea.Height)
 						},
 						new()
 						{
@@ -97,7 +101,7 @@ public static class DefaultSettings
 								}
 							},
 							IsPrimary = false,
-							Location = new ScreenLocation(2340, 0, 1500, 900)
+							Location = new ScreenLocation(workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 2, 0, workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 1, workspace.DisplayManager.PrimaryDisplay.WorkArea.Height / 3 * 2)
 						},
 						new()
 						{
@@ -110,7 +114,7 @@ public static class DefaultSettings
 								}
 							},
 							IsPrimary = false,
-							Location = new ScreenLocation(2340, 900, 1500, 660)
+							Location = new ScreenLocation(workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 2, workspace.DisplayManager.PrimaryDisplay.WorkArea.Height / 3 * 2, workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 1, workspace.DisplayManager.PrimaryDisplay.WorkArea.Height / 3 * 1)
 						}
 					}
 				}
