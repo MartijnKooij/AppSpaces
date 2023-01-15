@@ -9,14 +9,13 @@ public static class SettingsManager
 
 	public static async Task<Settings> LoadSettings()
 	{
-		// TODO: Setting validation
 		var settingsPath = Path.Join(Environment.SpecialFolder.LocalApplicationData.ToString(), SettingsFile);
 		if (!File.Exists(settingsPath))
 		{
 			return await DefaultSettings.Create();
 		}
 
-		using var stream = File.OpenText(settingsPath);
+		var stream = File.OpenText(settingsPath);
 		var settingsData = await stream.ReadToEndAsync();
 		if (string.IsNullOrEmpty(settingsData))
 		{
@@ -24,13 +23,25 @@ public static class SettingsManager
 		}
 
 		var settings = JsonSerializer.Deserialize<Settings>(settingsData);
+		if (settings == null || !settings.Validate())
+		{
+			return await DefaultSettings.Create();
+		}
+		stream.Dispose();
 
-		return settings ?? await DefaultSettings.Create();
+		// Store again in case the model had changed.
+		await SaveSettings(settings);
+
+		return settings;
 	}
 
 	public static async Task SaveSettings(Settings settings)
 	{
-		// TODO: Setting validation
+		if (!settings.Validate())
+		{
+			throw new ApplicationException("Invalid settings provided", new ApplicationException(JsonSerializer.Serialize(settings)));
+		}
+
 		var settingsPath = Path.Join(Environment.SpecialFolder.LocalApplicationData.ToString(), SettingsFile);
 		var file = new FileInfo(settingsPath);
 		file.Directory?.Create();

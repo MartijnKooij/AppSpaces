@@ -10,7 +10,6 @@ public sealed partial class App
 	private static Window? _window;
 	private static Settings? _settings;
 	private static IWorkspace? _workspace;
-	private static Guid _activeAppSpaceId = Guid.Empty;
 
 	public App()
 	{
@@ -21,12 +20,7 @@ public sealed partial class App
 	{
 		_settings = await SettingsManager.LoadSettings();
 
-		//ToDo: Update active
-		_activeAppSpaceId = _settings.AppSpaces.First().Id;
-
 		InitializeWindowManagement();
-
-
 		InitializeTrayIcon();
 	}
 
@@ -48,9 +42,8 @@ public sealed partial class App
 
 	private static void SnapToRegisteredAppSpace(IWindow window)
 	{
-		if (!GetActiveSpace(out var activeAppSpace)) return;
-
-		var windowSpace = activeAppSpace!.Spaces
+		var activeAppSpace = _settings!.AppSpaces.Single(a => a.Id == _settings.ActiveAppSpaceId);
+		var windowSpace = activeAppSpace.Spaces
 			.SingleOrDefault(s => s.Apps
 				.Any(a => a.IsMatch(window)));
 
@@ -64,25 +57,14 @@ public sealed partial class App
 
 	private static void SnapToContainingAppSpace(IWindow window)
 	{
-		if (!GetActiveSpace(out var activeAppSpace)) return;
+		var activeAppSpace = _settings!.AppSpaces.Single(a => a.Id == _settings.ActiveAppSpaceId);
 
 		var pointerLocation = new ScreenLocation(_workspace!.CursorLocation.X, _workspace.CursorLocation.Y, 1, 1);
 		var windowLocation = new ScreenLocation(window.Position.Left, window.Position.Top, window.Position.Width, window.Position.Height);
-		var containingSpace = activeAppSpace!.Spaces.SingleOrDefault(space => space.Location.HitTest(pointerLocation) || space.Location.HitTest(windowLocation));
+		var containingSpace = activeAppSpace.Spaces.SingleOrDefault(space => space.Location.HitTest(pointerLocation) || space.Location.HitTest(windowLocation));
 		if (containingSpace == null) return;
 
 		SnapToSpace(window, containingSpace);
-	}
-
-	private static bool GetActiveSpace(out AppSpace? activeAppSpace)
-	{
-		// TODO: The active space should probably be managed by settings? Maybe not, depends on how we will switch...
-		activeAppSpace = _settings?.AppSpaces.FirstOrDefault(a => a.Id == App._activeAppSpaceId);
-		if (activeAppSpace != null) return true;
-
-		// TODO: We should enforce that an active app space is always present so we don't have to do these checks in here.
-		activeAppSpace = _settings?.AppSpaces.First();
-		return activeAppSpace != null;
 	}
 
 	private static void SnapToSpace(IWindow window, Space space)
