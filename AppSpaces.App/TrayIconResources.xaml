@@ -112,7 +112,7 @@
 		ContextMenuMode="SecondWindow"
 		LeftClickCommand="{StaticResource ShowHideWindowCommand}"
 		NoLeftClickDelay="True"
-		IconSource="\Assets\Red.ico"
+		IconSource="\Assets\Martijn-Kooij-Software-Icon-16.ico"
 		>
 		<tb:TaskbarIcon.ContextFlyout>
 			<MenuFlyout>

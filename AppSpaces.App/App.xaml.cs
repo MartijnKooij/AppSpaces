@@ -1,4 +1,5 @@
 ﻿using AppSpaces.App.Models;
+using H.Hooks;
 using WinMan;
 using WinMan.Windows;
 
@@ -10,6 +11,7 @@ public sealed partial class App
 	private static Window? _window;
 	private static Settings? _settings;
 	private static IWorkspace? _workspace;
+	private static LowLevelKeyboardHook? _keyboardHooks;
 
 	public App()
 	{
@@ -21,7 +23,29 @@ public sealed partial class App
 		_settings = await SettingsManager.LoadSettings();
 
 		InitializeWindowManagement();
+		InitializeKeyboardManagement();
 		InitializeTrayIcon();
+	}
+
+	private static void InitializeKeyboardManagement()
+	{
+		_keyboardHooks = new LowLevelKeyboardHook
+		{
+			IsExtendedMode = true
+		};
+		_keyboardHooks.Up += HandleKeyUp;
+		_keyboardHooks.Start();
+	}
+
+	private static async void HandleKeyUp(object? sender, KeyboardEventArgs e)
+	{
+		var registeredShortcut = _settings!.KeyboardShortcuts.SingleOrDefault(shortcut => e.Keys.Are(shortcut.AllKeys));
+		if (registeredShortcut == null) return;
+
+		_settings.ActiveAppSpaceId = registeredShortcut.AppSpaceId;
+		await SettingsManager.SaveSettings(_settings);
+
+		SnapAllWindowsToRegisteredAppSpace();
 	}
 
 	private static void InitializeWindowManagement()
@@ -40,17 +64,21 @@ public sealed partial class App
 
 	}
 
+	private static void SnapAllWindowsToRegisteredAppSpace()
+	{
+		foreach (var window in _workspace!.GetSnapshot())
+		{
+			SnapToRegisteredAppSpace(window);
+		}
+	}
+
 	private static void SnapToRegisteredAppSpace(IWindow window)
 	{
 		var activeAppSpace = _settings!.AppSpaces.Single(a => a.Id == _settings.ActiveAppSpaceId);
 		var windowSpace = activeAppSpace.Spaces
-			.SingleOrDefault(s => s.Apps
-				.Any(a => a.IsMatch(window)));
-
-		if (windowSpace == null)
-		{
-			return;
-		}
+			                  .SingleOrDefault(s => s.Apps
+				                  .Any(a => a.IsMatch(window)))
+		                  ?? activeAppSpace.Spaces.Single(s => s.IsPrimary);
 
 		SnapToSpace(window, windowSpace);
 	}
@@ -69,6 +97,8 @@ public sealed partial class App
 
 	private static void SnapToSpace(IWindow window, Space space)
 	{
+		if (!window.CanMove) return;
+
 		window.SetState(WindowState.Restored);
 		window.SetPosition(new Rectangle(space.Location.X - window.FrameMargins.Left, space.Location.Y - window.FrameMargins.Top, space.Location.X + space.Location.Width + window.FrameMargins.Right, space.Location.Y + space.Location.Height + window.FrameMargins.Bottom));
 	}
@@ -107,6 +137,8 @@ public sealed partial class App
 	private static void ExitApplicationCommand_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
 	{
 		_workspace?.Dispose();
+		_keyboardHooks?.Stop();
+		_keyboardHooks?.Dispose();
 		_trayIcon?.Dispose();
 		_window?.Close();
 	}

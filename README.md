@@ -25,4 +25,4 @@ This is once again just a PoC based on an idea that popped in my head. Whether I
     - If the primary space changes all apps that have not been assiged to a space will be moved to the primary space.
 
 ## Third party licenses
-This project uses WinMan, see the linked [Third Party License](/Third%20Party%20License.md) file for more details
+This project uses WinMan, H.NotifyIcon and H.Hooks. See the linked [Third Party License](/Third%20Party%20License.md) file for more details
