@@ -12,6 +12,8 @@ public static class DefaultSettings
 			{
 				new()
 				{
+					Id = Guid.NewGuid(),
+					Label = "Test space 1",
 					Spaces = new List<Space>
 					{
 						new()

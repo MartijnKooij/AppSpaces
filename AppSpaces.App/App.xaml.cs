@@ -70,7 +70,7 @@ public sealed partial class App
 	private static void SnapToSpace(IWindow window, Space space)
 	{
 		window.SetState(WindowState.Restored);
-		window.SetPosition(new Rectangle(space.Location.X, space.Location.Y, space.Location.X + space.Location.Width, space.Location.Y + space.Location.Height));
+		window.SetPosition(new Rectangle(space.Location.X - window.FrameMargins.Left, space.Location.Y - window.FrameMargins.Top, space.Location.X + space.Location.Width + window.FrameMargins.Right, space.Location.Y + space.Location.Height + window.FrameMargins.Bottom));
 	}
 
 	private void InitializeTrayIcon()
