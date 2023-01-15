@@ -1,4 +1,5 @@
-﻿using AppSpaces.App.Models;
+﻿using AppSpaces.App.Extensions;
+using AppSpaces.App.Models;
 using H.Hooks;
 using WinMan;
 using WinMan.Windows;
@@ -108,6 +109,10 @@ public sealed partial class App
 		foreach (var otherSpace in activeAppSpace.Spaces)
 		{
 			otherSpace.Windows.RemoveAll(w => w.Window.Handle == window.Handle);
+			
+			if (matchedAppSearch == null) continue;
+			otherSpace.Apps.RemoveAll(a =>
+				a.SearchType == matchedAppSearch.SearchType && a.SearchQuery == matchedAppSearch.SearchQuery);
 		}
 
 		// Add it to the current space.
@@ -115,6 +120,11 @@ public sealed partial class App
 		{
 			Window = window,
 			MatchedAppSearch = matchedAppSearch
+		});
+		space.Apps.Add(matchedAppSearch ?? new AppSearch
+		{
+			SearchType = SearchType.ExecutablePath,
+			SearchQuery = window.GetProcessExe()
 		});
 	}
 
