@@ -1,5 +1,4 @@
-﻿using WinMan;
-using AppSpaces.App.Models;
+﻿using AppSpaces.App.Models;
 
 namespace AppSpaces.App;
 
@@ -26,7 +25,7 @@ public static class DefaultSettings
 								}
 							},
 							IsPrimary = true,
-							Location = new Rectangle(0, 0, 1120, 1040)
+							Location = new ScreenLocation(0, 0, 2840, 1560)
 						},
 						new()
 						{
@@ -35,11 +34,16 @@ public static class DefaultSettings
 								new()
 								{
 									SearchType = SearchType.Title,
-									SearchQuery = "Notepad"
+									SearchQuery = "Total Commander"
+								},
+								new()
+								{
+									SearchType = SearchType.Title,
+									SearchQuery = "Firefox"
 								}
 							},
 							IsPrimary = false,
-							Location = new Rectangle(1120, 0, 1920, 1040)
+							Location = new ScreenLocation(2840, 0, 1000, 1560)
 						}
 
 					}

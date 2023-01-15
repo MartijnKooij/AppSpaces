@@ -6,13 +6,11 @@ namespace AppSpaces.App;
 
 public sealed partial class App
 {
-	public static TaskbarIcon? TrayIcon { get; private set; }
-	public static Window? Window { get; set; }
-	public static Settings? Settings { get; set; }
-
-	public static IWorkspace? Workspace { get; private set; }
-
-	private static Guid activeAppSpaceId = Guid.Empty;
+	private static TaskbarIcon? _trayIcon;
+	private static Window? _window;
+	private static Settings? _settings;
+	private static IWorkspace? _workspace;
+	private static Guid _activeAppSpaceId = Guid.Empty;
 
 	public App()
 	{
@@ -21,10 +19,10 @@ public sealed partial class App
 
 	protected override async void OnLaunched(LaunchActivatedEventArgs args)
 	{
-		Settings = await SettingsManager.LoadSettings();
+		_settings = await SettingsManager.LoadSettings();
 
 		//ToDo: Update active
-		activeAppSpaceId = Settings.AppSpaces.First().Id;
+		_activeAppSpaceId = _settings.AppSpaces.First().Id;
 
 		InitializeWindowManagement();
 
@@ -34,58 +32,63 @@ public sealed partial class App
 
 	private static void InitializeWindowManagement()
 	{
-		Workspace = new Win32Workspace();
-		Workspace.WindowManaging += (_, args) => RegisterWindow(args.Source);
-		Workspace.WindowAdded += (_, args) => RegisterWindow(args.Source);
-		Workspace.Open();
+		_workspace = new Win32Workspace();
+		_workspace.WindowManaging += (_, args) => RegisterWindow(args.Source);
+		_workspace.WindowAdded += (_, args) => RegisterWindow(args.Source);
+		_workspace.Open();
 	}
 
 	private static void RegisterWindow(IWindow window)
 	{
-		var isRegistered = SnapToAppSpaceIfRegistered(window, false);
-		if (isRegistered)
-		{
-			window.PositionChangeEnd += (_, windowPositionChangedEventArgs) =>
-				SnapToAppSpaceIfRegistered(windowPositionChangedEventArgs.Source, true);
-		}
+		SnapToRegisteredAppSpace(window);
+		window.PositionChangeEnd += (_, windowPositionChangedEventArgs) =>
+			SnapToContainingAppSpace(windowPositionChangedEventArgs.Source);
+
 	}
 
-	private static bool SnapToAppSpaceIfRegistered(IWindow window, bool isMoving)
+	private static void SnapToRegisteredAppSpace(IWindow window)
 	{
-		// TODO: The active space should probably be managed by settings? Maybe not, depends on how we will switch...
-		var activeAppSpace = Settings?.AppSpaces.FirstOrDefault(a => a.Id == App.activeAppSpaceId);
-		if (activeAppSpace == null)
-		{
-			// TODO: Should not happen, should we throw?
-			return false;
-		}
+		if (!GetActiveSpace(out var activeAppSpace)) return;
 
-		var windowSpace = activeAppSpace.Spaces
+		var windowSpace = activeAppSpace!.Spaces
 			.SingleOrDefault(s => s.Apps
 				.Any(a => a.IsMatch(window)));
 
 		if (windowSpace == null)
 		{
-			var primarySpace = activeAppSpace.Spaces.Single(s => s.IsPrimary);
-			SnapToSpace(window, primarySpace, isMoving);
-			return true;
+			return;
 		}
 
-		SnapToSpace(window, windowSpace, isMoving);
-		return true;
+		SnapToSpace(window, windowSpace);
 	}
 
-	private static void SnapToSpace(IWindow window, Space space, bool isMoving)
+	private static void SnapToContainingAppSpace(IWindow window)
 	{
-		var shouldMove = !isMoving || (space.Location.Left <= window.Position.Left &&
-		                               space.Location.Right >= window.Position.Right &&
-		                               space.Location.Top <= window.Position.Top &&
-		                               space.Location.Bottom >= window.Position.Bottom);
+		if (!GetActiveSpace(out var activeAppSpace)) return;
 
-		if (!shouldMove) return;
+		var pointerLocation = new ScreenLocation(_workspace!.CursorLocation.X, _workspace.CursorLocation.Y, 1, 1);
+		var windowLocation = new ScreenLocation(window.Position.Left, window.Position.Top, window.Position.Width, window.Position.Height);
+		var containingSpace = activeAppSpace!.Spaces.SingleOrDefault(space => space.Location.HitTest(pointerLocation) || space.Location.HitTest(windowLocation));
+		if (containingSpace == null) return;
 
+		SnapToSpace(window, containingSpace);
+	}
+
+	private static bool GetActiveSpace(out AppSpace? activeAppSpace)
+	{
+		// TODO: The active space should probably be managed by settings? Maybe not, depends on how we will switch...
+		activeAppSpace = _settings?.AppSpaces.FirstOrDefault(a => a.Id == App._activeAppSpaceId);
+		if (activeAppSpace != null) return true;
+
+		// TODO: We should enforce that an active app space is always present so we don't have to do these checks in here.
+		activeAppSpace = _settings?.AppSpaces.First();
+		return activeAppSpace != null;
+	}
+
+	private static void SnapToSpace(IWindow window, Space space)
+	{
 		window.SetState(WindowState.Restored);
-		window.SetPosition(space.Location);
+		window.SetPosition(new Rectangle(space.Location.X, space.Location.Y, space.Location.X + space.Location.Width, space.Location.Y + space.Location.Height));
 	}
 
 	private void InitializeTrayIcon()
@@ -96,33 +99,33 @@ public sealed partial class App
 		var exitApplicationCommand = (XamlUICommand)Resources["ExitApplicationCommand"];
 		exitApplicationCommand.ExecuteRequested += ExitApplicationCommand_ExecuteRequested;
 
-		TrayIcon = (TaskbarIcon)Resources["TrayIcon"];
-		TrayIcon.ForceCreate();
+		_trayIcon = (TaskbarIcon)Resources["TrayIcon"];
+		_trayIcon.ForceCreate();
 	}
 
 	private static void ShowHideWindowCommand_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
 	{
-		if (Window == null)
+		if (_window == null)
 		{
-			Window = new Window();
-			Window.Show();
+			_window = new Window();
+			_window.Show();
 			return;
 		}
 
-		if (Window.Visible)
+		if (_window.Visible)
 		{
-			Window.Hide();
+			_window.Hide();
 		}
 		else
 		{
-			Window.Show();
+			_window.Show();
 		}
 	}
 
 	private static void ExitApplicationCommand_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
 	{
-		Workspace?.Dispose();
-		TrayIcon?.Dispose();
-		Window?.Close();
+		_workspace?.Dispose();
+		_trayIcon?.Dispose();
+		_window?.Close();
 	}
 }
