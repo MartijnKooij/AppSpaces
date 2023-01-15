@@ -16,7 +16,7 @@ This is once again just a PoC based on an idea that popped in my head. Whether I
 - When a new window is opened it should be placed in its designated space
 - When a window is dropped in a space it is maximized within that space.
     - A question is asked whether the app should be linked to that space.
-        - If if was already linked to another space it is moved.
+        - If it was already linked to another space it is moved.
 - When an app is maximized it is maximized within the space the click was in.
 - When a different AppSpace is loaded all windows are moved to their assigned space.
 - By default the first space is designated as the primary space

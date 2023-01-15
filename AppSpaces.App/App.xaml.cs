@@ -75,12 +75,15 @@ public sealed partial class App
 	private static void SnapToRegisteredAppSpace(IWindow window)
 	{
 		var activeAppSpace = _settings!.AppSpaces.Single(a => a.Id == _settings.ActiveAppSpaceId);
-		var windowSpace = activeAppSpace.Spaces
-			                  .SingleOrDefault(s => s.Apps
-				                  .Any(a => a.IsMatch(window)))
-		                  ?? activeAppSpace.Spaces.Single(s => s.IsPrimary);
+		var matchedWindowSpace = activeAppSpace.Spaces
+			.SingleOrDefault(s => s.Apps
+				.Any(a => a.IsMatch(window)));
+		var windowSpace = matchedWindowSpace ?? activeAppSpace.Spaces.Single(s => s.IsPrimary);
 
-		SnapToSpace(window, windowSpace);
+		if (!SnapToSpace(window, windowSpace)) return;
+
+		var matchedAppSearch = matchedWindowSpace?.Apps.Single(a => a.IsMatch(window));
+		RegisterWindowInSpace(window, windowSpace, matchedAppSearch);
 	}
 
 	private static void SnapToContainingAppSpace(IWindow window)
@@ -92,15 +95,37 @@ public sealed partial class App
 		var containingSpace = activeAppSpace.Spaces.SingleOrDefault(space => space.Location.HitTest(pointerLocation) || space.Location.HitTest(windowLocation));
 		if (containingSpace == null) return;
 
-		SnapToSpace(window, containingSpace);
+		if (!SnapToSpace(window, containingSpace)) return;
+
+		RegisterWindowInSpace(window, containingSpace);
 	}
 
-	private static void SnapToSpace(IWindow window, Space space)
+	private static void RegisterWindowInSpace(IWindow window, Space space, AppSearch? matchedAppSearch = null)
 	{
-		if (!window.CanMove) return;
+		var activeAppSpace = _settings!.AppSpaces.Single(a => a.Id == _settings.ActiveAppSpaceId);
+
+		// Remove this window from any spaces where it might already be registered in.
+		foreach (var otherSpace in activeAppSpace.Spaces)
+		{
+			otherSpace.Windows.RemoveAll(w => w.Window.Handle == window.Handle);
+		}
+
+		// Add it to the current space.
+		space.Windows.Add(new WindowInSpace
+		{
+			Window = window,
+			MatchedAppSearch = matchedAppSearch
+		});
+	}
+
+	private static bool SnapToSpace(IWindow window, Space space)
+	{
+		if (!window.CanMove) return false;
 
 		window.SetState(WindowState.Restored);
 		window.SetPosition(new Rectangle(space.Location.X - window.FrameMargins.Left, space.Location.Y - window.FrameMargins.Top, space.Location.X + space.Location.Width + window.FrameMargins.Right, space.Location.Y + space.Location.Height + window.FrameMargins.Bottom));
+
+		return true;
 	}
 
 	private void InitializeTrayIcon()
