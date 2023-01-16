@@ -40,6 +40,16 @@ public sealed partial class App
 
 	private static async void HandleKeyUp(object? sender, KeyboardEventArgs e)
 	{
+		if (e.Keys.Are(Key.LeftWindows, Key.Control, Key.Alt, Key.PageUp))
+		{
+			ActivateWindowInSpace(-1);
+			return;
+		}
+		if (e.Keys.Are(Key.LeftWindows, Key.Control, Key.Alt, Key.PageDown))
+		{
+			ActivateWindowInSpace(1);
+			return;
+		}
 		var registeredShortcut = _settings!.KeyboardShortcuts.SingleOrDefault(shortcut => e.Keys.Are(shortcut.AllKeys));
 		if (registeredShortcut == null) return;
 
@@ -47,6 +57,33 @@ public sealed partial class App
 		await SettingsManager.SaveSettings(_settings);
 
 		SnapAllWindowsToRegisteredAppSpace();
+	}
+
+	private static void ActivateWindowInSpace(int skip)
+	{
+		var activeAppSpace = _settings!.AppSpaces.Single(a => a.Id == _settings.ActiveAppSpaceId);
+		var activeWindow = _workspace?.FocusedWindow;
+		if (activeWindow == null)
+		{
+			activeWindow = activeAppSpace.Spaces.First().Windows.FirstOrDefault()?.Window;
+			if (activeWindow == null) return;
+		}
+
+		var spaceOfActiveWindow =
+			activeAppSpace.Spaces
+				.FirstOrDefault(s => s.Windows
+					.Any(w => w.Window.Handle == activeWindow.Handle));
+		if (!(spaceOfActiveWindow?.Windows.Any() ?? false))
+		{
+			return;
+		}
+
+		var indexOfActiveWindow = spaceOfActiveWindow.Windows.FindIndex(w => w.Window.Handle == activeWindow.Handle);
+		var activeIndex = indexOfActiveWindow + skip;
+		if (activeIndex < 0) activeIndex = spaceOfActiveWindow.Windows.Count - 1;
+		else if (activeIndex >= spaceOfActiveWindow.Windows.Count) activeIndex = 0;
+
+		spaceOfActiveWindow.Windows[activeIndex].Window.RequestFocus();
 	}
 
 	private static void InitializeWindowManagement()
