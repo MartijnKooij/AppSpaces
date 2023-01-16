@@ -101,18 +101,21 @@ public sealed partial class App
 		RegisterWindowInSpace(window, containingSpace);
 	}
 
-	private static void RegisterWindowInSpace(IWindow window, Space space, AppSearch? matchedAppSearch = null)
+	private static async void RegisterWindowInSpace(IWindow window, Space space, AppSearch? matchedAppSearch = null)
 	{
 		var activeAppSpace = _settings!.AppSpaces.Single(a => a.Id == _settings.ActiveAppSpaceId);
+		var newAppSearch = matchedAppSearch ?? new AppSearch
+		{
+			SearchType = SearchType.ExecutablePath,
+			SearchQuery = window.GetProcessExe()
+		};
 
 		// Remove this window from any spaces where it might already be registered in.
 		foreach (var otherSpace in activeAppSpace.Spaces)
 		{
 			otherSpace.Windows.RemoveAll(w => w.Window.Handle == window.Handle);
-			
-			if (matchedAppSearch == null) continue;
 			otherSpace.Apps.RemoveAll(a =>
-				a.SearchType == matchedAppSearch.SearchType && a.SearchQuery == matchedAppSearch.SearchQuery);
+				a.SearchType == newAppSearch.SearchType && a.SearchQuery == newAppSearch.SearchQuery);
 		}
 
 		// Add it to the current space.
@@ -121,11 +124,8 @@ public sealed partial class App
 			Window = window,
 			MatchedAppSearch = matchedAppSearch
 		});
-		space.Apps.Add(matchedAppSearch ?? new AppSearch
-		{
-			SearchType = SearchType.ExecutablePath,
-			SearchQuery = window.GetProcessExe()
-		});
+		space.Apps.Add(newAppSearch);
+		await SettingsManager.SaveSettings(_settings);
 	}
 
 	private static bool SnapToSpace(IWindow window, Space space)

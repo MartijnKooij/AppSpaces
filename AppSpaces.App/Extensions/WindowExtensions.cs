@@ -16,6 +16,6 @@ public static class WindowExtensions
 
 		var process = Process.GetProcessById((int)processId);
 
-		return process.MainModule?.FileName ?? "";
+		return Path.GetFileName(process.MainModule?.FileName) ?? "";
 	}
 }
