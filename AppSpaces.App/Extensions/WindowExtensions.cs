@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using WinMan;
 
@@ -11,11 +12,19 @@ public static class WindowExtensions
 
 	public static string GetProcessExe(this IWindow window)
 	{
-		var threadId = GetWindowThreadProcessId(window.Handle, out var processId);
-		if (threadId == 0) return "";
+		try
+		{
+			var threadId = GetWindowThreadProcessId(window.Handle, out var processId);
+			if (threadId == 0) return "";
 
-		var process = Process.GetProcessById((int)processId);
+			var process = Process.GetProcessById((int)processId);
+			var moduleFileName = process.MainModule?.FileName;
 
-		return Path.GetFileName(process.MainModule?.FileName) ?? "";
+			return Path.GetFileName(moduleFileName) ?? "";
+		}
+		catch (Win32Exception)
+		{
+			return "";
+		}
 	}
 }
