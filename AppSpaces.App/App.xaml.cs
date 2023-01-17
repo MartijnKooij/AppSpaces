@@ -83,7 +83,14 @@ public sealed partial class App
 		if (activeIndex < 0) activeIndex = spaceOfActiveWindow.Windows.Count - 1;
 		else if (activeIndex >= spaceOfActiveWindow.Windows.Count) activeIndex = 0;
 
-		spaceOfActiveWindow.Windows[activeIndex].Window.RequestFocus();
+		try
+		{
+			spaceOfActiveWindow.Windows[activeIndex].Window.RequestFocus();
+		}
+		catch (InvalidWindowReferenceException)
+		{
+			spaceOfActiveWindow.Windows.RemoveAt(activeIndex);
+		}
 	}
 
 	private static void InitializeWindowManagement()
