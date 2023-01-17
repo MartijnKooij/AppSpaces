@@ -51,6 +51,24 @@ public static class SettingsManager
 			WriteIndented = true
 		});
 
-		await File.WriteAllTextAsync(settingsPath, settingsData);
+		await TrySaveSettings(settingsPath, settingsData);
+	}
+
+	private static async Task TrySaveSettings(string path, string data)
+	{
+		var attempts = 0;
+		while (true)
+		{
+			try
+			{
+				await File.WriteAllTextAsync(path, data);
+				return;
+			}
+			catch (Exception)
+			{
+				attempts++;
+				if (attempts > 5) throw;
+			}
+		}
 	}
 }

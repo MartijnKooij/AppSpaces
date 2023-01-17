@@ -85,7 +85,7 @@ public sealed partial class App
 
 		try
 		{
-			spaceOfActiveWindow.Windows[activeIndex].Window.RequestFocus();
+			spaceOfActiveWindow.Windows[activeIndex].Window.ForceForegroundWindow();
 		}
 		catch (InvalidWindowReferenceException)
 		{
