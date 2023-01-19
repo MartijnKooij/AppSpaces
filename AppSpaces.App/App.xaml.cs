@@ -62,17 +62,17 @@ public sealed partial class App
 
 	private void InitializeTrayIcon()
 	{
-		var showHideWindowCommand = (XamlUICommand)Resources["ShowHideWindowCommand"];
-		showHideWindowCommand.ExecuteRequested += ShowHideWindowCommand_ExecuteRequested;
+		var settingsCommand = (XamlUICommand)Resources["Settings"];
+		settingsCommand.ExecuteRequested += ShowSettings;
 
 		var exitApplicationCommand = (XamlUICommand)Resources["ExitApplicationCommand"];
-		exitApplicationCommand.ExecuteRequested += ExitApplicationCommand_ExecuteRequested;
+		exitApplicationCommand.ExecuteRequested += ExitApplication;
 
 		_trayIcon = (TaskbarIcon)Resources["TrayIcon"];
 		_trayIcon.ForceCreate();
 	}
 
-	private static void ShowHideWindowCommand_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
+	private static void ShowSettings(object? _, ExecuteRequestedEventArgs args)
 	{
 		if (_window == null)
 		{
@@ -91,7 +91,7 @@ public sealed partial class App
 		}
 	}
 
-	private void ExitApplicationCommand_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
+	private void ExitApplication(object? _, ExecuteRequestedEventArgs args)
 	{
 		_windowService.Stop();
 		_keyboardHooks?.Stop();
