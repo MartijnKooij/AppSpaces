@@ -174,12 +174,17 @@ public sealed partial class App
 
 	private static bool SnapToSpace(IWindow window, Space space)
 	{
-		if (!window.CanMove) return false;
+		if (!ShouldMove(window)) return false;
 
 		window.SetState(WindowState.Restored);
 		window.SetPosition(new Rectangle(space.Location.X - window.FrameMargins.Left, space.Location.Y - window.FrameMargins.Top, space.Location.X + space.Location.Width + window.FrameMargins.Right, space.Location.Y + space.Location.Height + window.FrameMargins.Bottom));
 
 		return true;
+	}
+
+	private static bool ShouldMove(IWindow window)
+	{
+		return window is { CanMove: true, CanResize: true, CanReorder: true };
 	}
 
 	private void InitializeTrayIcon()
