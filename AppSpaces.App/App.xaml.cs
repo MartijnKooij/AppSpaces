@@ -184,7 +184,7 @@ public sealed partial class App
 
 	private static bool ShouldMove(IWindow window)
 	{
-		return window is { CanMove: true, CanResize: true, CanReorder: true };
+		return window is { CanMove: true, CanResize: true, CanReorder: true, CanMinimize: true, CanMaximize: true };
 	}
 
 	private void InitializeTrayIcon()
