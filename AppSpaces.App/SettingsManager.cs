@@ -68,6 +68,8 @@ public static class SettingsManager
 			{
 				attempts++;
 				if (attempts > 5) throw;
+
+				Thread.Sleep(500);
 			}
 		}
 	}
