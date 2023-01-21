@@ -10,7 +10,7 @@ public sealed partial class App
 	private Settings _settings = null!;
 
 	private static TaskbarIcon? _trayIcon;
-	private static Window? _window;
+	private static MainWindow? _window;
 	private static LowLevelKeyboardHook? _keyboardHooks;
 
 	public App()
@@ -76,7 +76,7 @@ public sealed partial class App
 	{
 		if (_window == null)
 		{
-			_window = new Window();
+			_window = new MainWindow();
 			_window.Show();
 			return;
 		}
