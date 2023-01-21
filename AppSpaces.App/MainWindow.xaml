@@ -10,7 +10,8 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:models="using:AppSpaces.App.Models"
 	mc:Ignorable="d">
-	<SplitView x:Name="SplitView" PaneBackground="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}"
+	<SplitView PaneBackground="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}"
+			   Margin="10"
 	           IsPaneOpen="True" OpenPaneLength="256" CompactPaneLength="48" DisplayMode="Inline">
 		<SplitView.Resources>
 			<DataTemplate x:Key="AppSpacesListViewTemplate" x:DataType="models:AppSpace">
@@ -19,14 +20,22 @@
 		</SplitView.Resources>
 
 		<SplitView.Pane>
-			<ListView
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="*"/>
+				</Grid.RowDefinitions>
+				<TextBlock Text="AppSpaces" Margin="60,12,0,0" Style="{StaticResource BaseTextBlockStyle}"/>
+				<ListView
 					x:Name="AppSpaces"
-					ItemTemplate="{StaticResource AppSpacesListViewTemplate}"
-					BorderThickness="1"
-					BorderBrush="{ThemeResource SystemControlForegroundBaseMediumLowBrush}"
-					Width="350"
-					Height="400"
-					HorizontalAlignment="Left"/>
+					Margin="0,12,0,0"
+					SelectionMode="Single"
+					Grid.Row="1"
+					VerticalAlignment="Stretch"
+					ItemTemplate="{StaticResource AppSpacesListViewTemplate}"/>
+			</Grid>
 		</SplitView.Pane>
+		<VariableSizedWrapGrid x:Name="AppSpaceGrid" Orientation="Vertical">
+		</VariableSizedWrapGrid>
 	</SplitView>
 </Window>

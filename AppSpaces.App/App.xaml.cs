@@ -10,7 +10,6 @@ public sealed partial class App
 	private Settings _settings = null!;
 
 	private static TaskbarIcon? _trayIcon;
-	private static MainWindow? _window;
 	private static LowLevelKeyboardHook? _keyboardHooks;
 
 	public App()
@@ -74,21 +73,8 @@ public sealed partial class App
 
 	private static void ShowSettings(object? _, ExecuteRequestedEventArgs args)
 	{
-		if (_window == null)
-		{
-			_window = new MainWindow();
-			_window.Show();
-			return;
-		}
-
-		if (_window.Visible)
-		{
-			_window.Hide();
-		}
-		else
-		{
-			_window.Show();
-		}
+		var window = new MainWindow();
+		window.Show();
 	}
 
 	private void ExitApplication(object? _, ExecuteRequestedEventArgs args)
@@ -97,6 +83,5 @@ public sealed partial class App
 		_keyboardHooks?.Stop();
 		_keyboardHooks?.Dispose();
 		_trayIcon?.Dispose();
-		_window?.Close();
 	}
 }
