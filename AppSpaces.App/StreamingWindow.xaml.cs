@@ -4,7 +4,9 @@ public sealed partial class StreamingWindow
 {
 	public StreamingWindow()
 	{
-		Title = Constants.StreamingWindowTitle;
 		InitializeComponent();
+
+		Title = Constants.StreamingWindowTitle;
+		ExtendsContentIntoTitleBar = true;
 	}
 }
