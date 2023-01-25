@@ -18,19 +18,40 @@ public class Settings
 		{
 			if (!appSpace.Spaces.Any()) return false;
 
-			var hasPrimary = false;
-			foreach (var space in appSpace.Spaces.Where(space => space.IsPrimary))
-			{
-				if (hasPrimary) space.IsPrimary = false;
-				hasPrimary = true;
-			}
-
-			if (!hasPrimary)
-			{
-				appSpace.Spaces.First().IsPrimary = true;
-			}
+			ValidateHasPrimary(appSpace);
+			ValidateHasStreaming(appSpace);
 		}
 
 		return true;
+	}
+
+	private static void ValidateHasPrimary(AppSpace appSpace)
+	{
+		var hasPrimary = false;
+		foreach (var space in appSpace.Spaces.Where(space => space.IsPrimary))
+		{
+			if (hasPrimary) space.IsPrimary = false;
+			hasPrimary = true;
+		}
+
+		if (!hasPrimary)
+		{
+			appSpace.Spaces.First().IsPrimary = true;
+		}
+	}
+
+	private static void ValidateHasStreaming(AppSpace appSpace)
+	{
+		var hasStreaming = false;
+		foreach (var space in appSpace.Spaces.Where(space => space.IsStreaming))
+		{
+			if (hasStreaming) space.IsStreaming = false;
+			hasStreaming = true;
+		}
+
+		if (!hasStreaming)
+		{
+			appSpace.Spaces.First().IsStreaming = true;
+		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
@@ -18,6 +18,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Remove="StreamingWindow.xaml" />
 		<None Remove="TrayIconResources.xaml" />
 	</ItemGroup>
 
@@ -35,6 +36,12 @@
 	  <Reference Include="WinMan.Windows.DllImports">
 	    <HintPath>..\WinMan\WinMan.Windows.DllImports.dll</HintPath>
 	  </Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Page Update="StreamingWindow.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
 	</ItemGroup>
 
 	<ItemGroup>

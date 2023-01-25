@@ -64,6 +64,9 @@ public sealed partial class App
 		var settingsCommand = (XamlUICommand)Resources["Settings"];
 		settingsCommand.ExecuteRequested += ShowSettings;
 
+		var streamingCommand = (XamlUICommand)Resources["Streaming"];
+		streamingCommand.ExecuteRequested += StartStreaming;
+
 		var exitApplicationCommand = (XamlUICommand)Resources["ExitApplicationCommand"];
 		exitApplicationCommand.ExecuteRequested += ExitApplication;
 
@@ -71,9 +74,15 @@ public sealed partial class App
 		_trayIcon.ForceCreate();
 	}
 
+	private static void StartStreaming(XamlUICommand sender, ExecuteRequestedEventArgs args)
+	{
+		var window = new StreamingWindow();
+		window.Show();
+	}
+
 	private static void ShowSettings(object? _, ExecuteRequestedEventArgs args)
 	{
-		var window = new MainWindow();
+		var window = new SettingsWindow();
 		window.Show();
 	}
 

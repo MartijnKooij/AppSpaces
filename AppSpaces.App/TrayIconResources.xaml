@@ -5,12 +5,21 @@
 	>
 
 	<XamlUICommand
+		x:Key="Streaming"
+		Label="Start Streaming"
+		Description="Enable streaming for the configured streaming space"
+	>
+		<XamlUICommand.IconSource>
+			<SymbolIconSource Symbol="VideoChat" />
+		</XamlUICommand.IconSource>
+	</XamlUICommand>
+	<XamlUICommand
 		x:Key="Settings"
 		Label="Settings"
 		Description="Open the AppSpaces settings page"
 		>
 		<XamlUICommand.IconSource>
-			<SymbolIconSource Symbol="OpenPane" />
+			<SymbolIconSource Symbol="Setting" />
 		</XamlUICommand.IconSource>
 	</XamlUICommand>
 	<XamlUICommand
@@ -34,6 +43,7 @@
 		>
 		<tb:TaskbarIcon.ContextFlyout>
 			<MenuFlyout>
+				<MenuFlyoutItem Command="{StaticResource Streaming}" />
 				<MenuFlyoutItem Command="{StaticResource Settings}" />
 				<MenuFlyoutSeparator />
 				<MenuFlyoutItem Command="{StaticResource ExitApplicationCommand}" />

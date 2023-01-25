@@ -1,21 +1,18 @@
-using ABI.Windows.UI;
 using AppSpaces.App.Models;
 using Microsoft.UI;
-using Microsoft.UI.Xaml.Shapes;
-using WinMan;
 using WinMan.Windows;
 using Rectangle = Microsoft.UI.Xaml.Shapes.Rectangle;
 
 namespace AppSpaces.App;
 
-public sealed partial class MainWindow
+public sealed partial class SettingsWindow
 {
 	private Settings _settings = null!;
 
-	public MainWindow()
+	public SettingsWindow()
 	{
-		this.Title = "AppSpaces - Settings";
-		this.InitializeComponent();
+		Title = "AppSpaces - Settings";
+		InitializeComponent();
 
 		LoadAppSpaces();
 	}

@@ -49,6 +49,7 @@ public static class DefaultSettings
 								}
 							},
 							IsPrimary = true,
+							IsStreaming = true,
 							Location = new ScreenLocation(0, 0, workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 2, workspace.DisplayManager.PrimaryDisplay.WorkArea.Height)
 						},
 						new()
@@ -67,6 +68,7 @@ public static class DefaultSettings
 								}
 							},
 							IsPrimary = false,
+							IsStreaming = false,
 							Location = new ScreenLocation(workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 2, 0, workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 1, workspace.DisplayManager.PrimaryDisplay.WorkArea.Height)
 						}
 					}
@@ -88,6 +90,7 @@ public static class DefaultSettings
 								}
 							},
 							IsPrimary = true,
+							IsStreaming = true,
 							Location = new ScreenLocation(0, 0, workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 2, workspace.DisplayManager.PrimaryDisplay.WorkArea.Height)
 						},
 						new()
@@ -101,6 +104,7 @@ public static class DefaultSettings
 								}
 							},
 							IsPrimary = false,
+							IsStreaming = false,
 							Location = new ScreenLocation(workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 2, 0, workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 1, workspace.DisplayManager.PrimaryDisplay.WorkArea.Height / 3 * 2)
 						},
 						new()
@@ -114,6 +118,7 @@ public static class DefaultSettings
 								}
 							},
 							IsPrimary = false,
+							IsStreaming = false,
 							Location = new ScreenLocation(workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 2, workspace.DisplayManager.PrimaryDisplay.WorkArea.Height / 3 * 2, workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 1, workspace.DisplayManager.PrimaryDisplay.WorkArea.Height / 3 * 1)
 						}
 					}

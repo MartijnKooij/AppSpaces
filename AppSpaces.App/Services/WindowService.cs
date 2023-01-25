@@ -86,10 +86,23 @@ public class WindowService
 				.Any(a => a.IsMatch(window)));
 		var windowSpace = matchedWindowSpace ?? ActiveAppSpace.Spaces.Single(s => s.IsPrimary);
 
-		if (!SnapToSpace(window, windowSpace)) return;
+		if (!SnapToSpace(window, windowSpace))
+		{
+			if (window.Title == Constants.StreamingWindowTitle)
+			{
+				SnapStreamingWindowToStreamingSpace(window);
+			}
+			return;
+		}
 
 		var matchedAppSearch = matchedWindowSpace?.Apps.Single(a => a.IsMatch(window));
 		RegisterWindowInSpace(window, windowSpace, matchedAppSearch);
+	}
+
+	private void SnapStreamingWindowToStreamingSpace(IWindow streamingWindow)
+	{
+		var streamingSpace = ActiveAppSpace.Spaces.Single(s => s.IsStreaming);
+		SnapToSpace(streamingWindow, streamingSpace, true);
 	}
 
 	private void SnapToContainingAppSpace(IWindow window)
@@ -130,9 +143,9 @@ public class WindowService
 		await SettingsManager.SaveSettings(_settings);
 	}
 
-	private static bool SnapToSpace(IWindow window, Space space)
+	private static bool SnapToSpace(IWindow window, Space space, bool force = false)
 	{
-		if (!ShouldMove(window)) return false;
+		if (!force && !ShouldMove(window)) return false;
 
 		window.SetState(WindowState.Restored);
 		window.SetPosition(new Rectangle(space.Location.X - window.FrameMargins.Left, space.Location.Y - window.FrameMargins.Top, space.Location.X + space.Location.Width + window.FrameMargins.Right, space.Location.Y + space.Location.Height + window.FrameMargins.Bottom));
@@ -142,6 +155,6 @@ public class WindowService
 
 	private static bool ShouldMove(IWindow window)
 	{
-		return window is { CanMove: true, CanResize: true, CanReorder: true, CanMinimize: true, CanMaximize: true };
+		return window is { CanMove: true, CanResize: true, CanReorder: true, CanMinimize: true, CanMaximize: true } && window.Title != Constants.StreamingWindowTitle;
 	}
 }
