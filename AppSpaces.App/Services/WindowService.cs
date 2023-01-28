@@ -72,6 +72,11 @@ public class WindowService
 		}
 	}
 
+	public Space GetStreamingSpace()
+	{
+		return ActiveAppSpace.Spaces.Single(s => s.IsStreaming);
+	}
+
 	private void RegisterWindow(IWindow window)
 	{
 		SnapToRegisteredAppSpace(window);
@@ -101,8 +106,7 @@ public class WindowService
 
 	private void SnapStreamingWindowToStreamingSpace(IWindow streamingWindow)
 	{
-		var streamingSpace = ActiveAppSpace.Spaces.Single(s => s.IsStreaming);
-		SnapToSpace(streamingWindow, streamingSpace, true);
+		SnapToSpace(streamingWindow, GetStreamingSpace(), true);
 	}
 
 	private void SnapToContainingAppSpace(IWindow window)

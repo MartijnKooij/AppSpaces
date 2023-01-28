@@ -74,9 +74,9 @@ public sealed partial class App
 		_trayIcon.ForceCreate();
 	}
 
-	private static void StartStreaming(XamlUICommand sender, ExecuteRequestedEventArgs args)
+	private void StartStreaming(XamlUICommand sender, ExecuteRequestedEventArgs args)
 	{
-		var window = new StreamingWindow();
+		var window = new StreamingWindow(_windowService.GetStreamingSpace());
 		window.Show();
 	}
 
