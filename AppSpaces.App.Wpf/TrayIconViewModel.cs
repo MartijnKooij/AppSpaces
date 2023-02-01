@@ -1,48 +1,32 @@
 ﻿using System.Windows;
+using AppSpaces.App.Wpf.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using H.NotifyIcon;
 
 namespace AppSpaces.App.Wpf;
 
 public partial class TrayIconViewModel : ObservableObject
 {
-	[ObservableProperty]
-	[NotifyCanExecuteChangedFor(nameof(ShowWindowCommand))]
-	public bool canExecuteShowWindow = true;
-
-	[ObservableProperty]
-	[NotifyCanExecuteChangedFor(nameof(HideWindowCommand))]
-	public bool canExecuteHideWindow;
-
-	/// <summary>
-	/// Shows a window, if none is already open.
-	/// </summary>
-	[RelayCommand(CanExecute = nameof(CanExecuteShowWindow))]
-	public void ShowWindow()
-	{
-		Application.Current.MainWindow ??= new SettingsWindow();
-		Application.Current.MainWindow.Show(disableEfficiencyMode: true);
-		CanExecuteShowWindow = false;
-		CanExecuteHideWindow = true;
-	}
-
-	/// <summary>
-	/// Hides the main window. This command is only enabled if a window is open.
-	/// </summary>
-	[RelayCommand(CanExecute = nameof(CanExecuteHideWindow))]
-	public void HideWindow()
-	{
-		Application.Current.MainWindow.Hide(enableEfficiencyMode: true);
-		CanExecuteShowWindow = true;
-		CanExecuteHideWindow = false;
-	}
-
-	/// <summary>
-	/// Shuts down the application.
-	/// </summary>
 	[RelayCommand]
-	public void ExitApplication()
+	private void ShowSettings()
+	{
+		var window = new SettingsWindow();
+		window.Show();
+	}
+
+	[RelayCommand]
+	private async void StartStreaming()
+	{
+		var settings = await SettingsManager.LoadSettings();
+		var windowService = new WindowService();
+		windowService.Start(settings);
+
+		var window = new StreamingWindow(windowService.GetStreamingSpace());
+		window.Show();
+	}
+
+	[RelayCommand]
+	private void ExitApplication()
 	{
 		Application.Current.Shutdown();
 	}

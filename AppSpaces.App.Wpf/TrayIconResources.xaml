@@ -9,17 +9,17 @@
         x:Key="SysTrayMenu"
         >
         <MenuItem
-            Header="Show Window"
-            Command="{Binding ShowWindowCommand}"
+            Header="Start Streaming"
+            Command="{Binding StartStreamingCommand}"
             />
         <MenuItem
-            Header="Hide Window"
-            Command="{Binding HideWindowCommand}"
+            Header="Settings..."
+            Command="{Binding  ShowSettingsCommand}"
             />
         <Separator />
         <MenuItem
             Header="Exit"
-            Command="{Binding ExitApplicationCommand}"
+            Command="{Binding  ExitApplicationCommand}"
             />
     </ContextMenu>
 
