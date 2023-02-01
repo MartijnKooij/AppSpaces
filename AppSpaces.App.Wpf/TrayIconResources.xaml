@@ -26,7 +26,7 @@
 
     <tb:TaskbarIcon
         x:Key="TrayIcon"
-        IconSource="pack://application:,,,/assets/app-icon.ico"
+        IconSource="pack://application:,,,/Assets/app-icon.ico"
         ToolTipText="Left-click to show window, right-click for menu"
         LeftClickCommand="{Binding ShowWindowCommand}"
         NoLeftClickDelay="True"
