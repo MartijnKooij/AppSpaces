@@ -1,50 +1,19 @@
-﻿using System.ComponentModel;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
+using PInvoke;
 
 namespace AppSpaces.App.Extensions;
 
 public static class WindowExtensions
 {
-	[DllImport("user32.dll", SetLastError=true)]
-	private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
-
-	// When you don't want the ProcessId, use this overload and pass 
-	// IntPtr.Zero for the second parameter
-	[DllImport("user32.dll")]
-	private static extern uint GetWindowThreadProcessId(IntPtr hWnd, 
-		IntPtr processId);
-
-	[DllImport("kernel32.dll")]
-	private static extern uint GetCurrentThreadId();
-
-	/// The GetForegroundWindow function returns a handle to the 
-	/// foreground window.
-	[DllImport("user32.dll")] 
-	private static extern IntPtr GetForegroundWindow(); 
-
-	[DllImport("user32.dll")]
-	private static extern bool AttachThreadInput(uint idAttach, 
-		uint idAttachTo, bool fAttach); 
-
-	[DllImport("user32.dll", SetLastError = true)] 
-	private static extern bool BringWindowToTop(IntPtr hWnd); 
-
-
-	[DllImport("user32.dll")]
-	private static extern bool ShowWindow(IntPtr hWnd, uint nCmdShow);
-
-	private const uint SwShow = 5;
-
 	public static string GetProcessExe(this IWindow window)
 	{
 		try
 		{
-			var threadId = GetWindowThreadProcessId(window.Handle, out var processId);
+			var threadId = User32.GetWindowThreadProcessId(window.Handle, out var processId);
 			if (threadId == 0) return "";
 
-			var process = Process.GetProcessById((int)processId);
+			var process = Process.GetProcessById(processId);
 			var moduleFileName = process.MainModule?.FileName;
 
 			return Path.GetFileName(moduleFileName) ?? "";
@@ -57,21 +26,20 @@ public static class WindowExtensions
 
 	public static void ForceForegroundWindow(this IWindow window)
 	{
-		var foreThread = GetWindowThreadProcessId(GetForegroundWindow(), 
-			IntPtr.Zero);
-		var appThread = GetCurrentThreadId();
+		var foreThread = User32.GetWindowThreadProcessId(User32.GetForegroundWindow(), out _);
+		var appThread = Kernel32.GetCurrentThreadId();
 
 		if (foreThread != appThread)
 		{
-			AttachThreadInput(foreThread, appThread, true);
-			BringWindowToTop(window.Handle);
-			ShowWindow(window.Handle, SwShow);
-			AttachThreadInput(foreThread, appThread, false);
+			User32.AttachThreadInput(foreThread, appThread, true);
+			User32.BringWindowToTop(window.Handle);
+			User32.ShowWindow(window.Handle, User32.WindowShowStyle.SW_SHOW);
+			User32.AttachThreadInput(foreThread, appThread, false);
 		}
 		else
 		{
-			BringWindowToTop(window.Handle);
-			ShowWindow(window.Handle, SwShow);
+			User32.BringWindowToTop(window.Handle);
+			User32.ShowWindow(window.Handle, User32.WindowShowStyle.SW_SHOW);
 		}
 	}
 }

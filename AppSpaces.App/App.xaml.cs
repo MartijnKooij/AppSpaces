@@ -81,7 +81,7 @@ public partial class App
 
 	}
 
-	private static void OnShowSettings()
+	private static void OnShowSettings(object? sender, EventArgs eventArgs)
 	{
 		var window = new SettingsWindow();
 		window.Show();

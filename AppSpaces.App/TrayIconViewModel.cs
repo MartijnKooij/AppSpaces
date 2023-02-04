@@ -6,10 +6,8 @@ namespace AppSpaces.App;
 
 public partial class TrayIconViewModel : ObservableObject
 {
-	public delegate void SettingsEvent();
-	public event SettingsEvent? Settings;
+	public event EventHandler? Settings;
 
-	public delegate void StreamingEvent();
 	public event EventHandler<bool>? Streaming;
 
 	[ObservableProperty]
@@ -23,7 +21,7 @@ public partial class TrayIconViewModel : ObservableObject
 	[RelayCommand]
 	private void ShowSettings()
 	{
-		Settings?.Invoke();
+		Settings?.Invoke(this, EventArgs.Empty);
 	}
 
 	[RelayCommand(CanExecute = nameof(CanExecuteStartStreaming))]
