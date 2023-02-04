@@ -105,6 +105,7 @@ public class WindowService
 	private void SnapStreamingWindowToStreamingSpace(IWindow streamingWindow)
 	{
 		SnapToSpace(streamingWindow, GetStreamingSpace(), true);
+		streamingWindow.SendToBack();
 	}
 
 	private void SnapToContainingAppSpace(IWindow window)
