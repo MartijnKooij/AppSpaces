@@ -33,7 +33,7 @@ public static class DefaultSettings
 				new()
 				{
 					Id = defaultId0,
-					Label = "Test space 0",
+					Label = "Working",
 					Spaces = new List<Space>
 					{
 						new()
@@ -74,7 +74,7 @@ public static class DefaultSettings
 				new()
 				{
 					Id = defaultId1,
-					Label = "Test space 1",
+					Label = "Sharing",
 					Spaces = new List<Space>
 					{
 						new()
@@ -87,23 +87,9 @@ public static class DefaultSettings
 									SearchQuery = "Visual Studio Code"
 								}
 							},
-							IsPrimary = true,
-							IsStreaming = true,
-							Location = new ScreenLocation(0, 0, workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 2, workspace.DisplayManager.PrimaryDisplay.WorkArea.Height)
-						},
-						new()
-						{
-							Apps = new List<AppSearch>
-							{
-								new()
-								{
-									SearchType = SearchType.Title,
-									SearchQuery = "Firefox"
-								}
-							},
 							IsPrimary = false,
-							IsStreaming = false,
-							Location = new ScreenLocation(workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 2, 0, workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 1, workspace.DisplayManager.PrimaryDisplay.WorkArea.Height / 3 * 2)
+							IsStreaming = true,
+							Location = new ScreenLocation(0, 0, 1920, 1080)
 						},
 						new()
 						{
@@ -117,7 +103,21 @@ public static class DefaultSettings
 							},
 							IsPrimary = false,
 							IsStreaming = false,
-							Location = new ScreenLocation(workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 2, workspace.DisplayManager.PrimaryDisplay.WorkArea.Height / 3 * 2, workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 1, workspace.DisplayManager.PrimaryDisplay.WorkArea.Height / 3 * 1)
+							Location = new ScreenLocation(0, 1080, 1920, Math.Max(0, workspace.DisplayManager.PrimaryDisplay.WorkArea.Height - 1080))
+						},
+						new()
+						{
+							Apps = new List<AppSearch>
+							{
+								new()
+								{
+									SearchType = SearchType.Title,
+									SearchQuery = "Firefox"
+								}
+							},
+							IsPrimary = true,
+							IsStreaming = false,
+							Location = new ScreenLocation(1920, 0, Math.Max(0, workspace.DisplayManager.PrimaryDisplay.WorkArea.Width - 1920), workspace.DisplayManager.PrimaryDisplay.WorkArea.Height)
 						}
 					}
 				}
