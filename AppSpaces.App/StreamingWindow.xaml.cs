@@ -3,7 +3,7 @@ using AppSpaces.App.Models;
 
 namespace AppSpaces.App;
 
-public partial class StreamingWindow : Window
+public partial class StreamingWindow
 {
 	private Space _streamingSpace;
 

@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using AppSpaces.App.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -7,22 +6,40 @@ namespace AppSpaces.App;
 
 public partial class TrayIconViewModel : ObservableObject
 {
+	public delegate void SettingsEvent();
+	public event SettingsEvent? Settings;
+
+	public delegate void StreamingEvent();
+	public event EventHandler<bool>? Streaming;
+
+	[ObservableProperty]
+	[NotifyCanExecuteChangedFor(nameof(StartStreamingCommand))]
+	private bool _canExecuteStartStreaming = true;
+
+	[ObservableProperty]
+	[NotifyCanExecuteChangedFor(nameof(StopStreamingCommand))]
+	private bool _canExecuteStopStreaming;
+
 	[RelayCommand]
 	private void ShowSettings()
 	{
-		var window = new SettingsWindow();
-		window.Show();
+		Settings?.Invoke();
 	}
 
-	[RelayCommand]
-	private async void StartStreaming()
+	[RelayCommand(CanExecute = nameof(CanExecuteStartStreaming))]
+	private void StartStreaming()
 	{
-		var settings = await SettingsManager.LoadSettings();
-		var windowService = new WindowService();
-		windowService.Start(settings);
+		Streaming?.Invoke(this, true);
+		CanExecuteStartStreaming = false;
+		CanExecuteStopStreaming = true;
+	}
 
-		var window = new StreamingWindow(windowService.GetStreamingSpace());
-		window.Show();
+	[RelayCommand(CanExecute = nameof(CanExecuteStopStreaming))]
+	private void StopStreaming()
+	{
+		Streaming?.Invoke(this, false);
+		CanExecuteStartStreaming = true;
+		CanExecuteStopStreaming = false;
 	}
 
 	[RelayCommand]

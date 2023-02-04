@@ -7,6 +7,7 @@ namespace AppSpaces.App;
 public partial class App
 {
 	private readonly WindowService _windowService;
+	private StreamingWindow? _streamingWindow;
 	private Settings _settings = null!;
 
 	private static TaskbarIcon? _trayIcon;
@@ -26,9 +27,6 @@ public partial class App
 
 		InitializeKeyboardManagement();
 		InitializeTrayIcon();
-
-		_trayIcon = FindResource("TrayIcon") as TaskbarIcon;
-		_trayIcon?.ForceCreate();
 	}
 
 	protected override void OnExit(ExitEventArgs e)
@@ -76,5 +74,30 @@ public partial class App
 	{
 		_trayIcon = (TaskbarIcon)Resources["TrayIcon"];
 		_trayIcon.ForceCreate();
+
+		var trayIconContext = (TrayIconViewModel)_trayIcon.DataContext;
+		trayIconContext.Settings += OnShowSettings;
+		trayIconContext.Streaming += OnStreaming;
+
+	}
+
+	private static void OnShowSettings()
+	{
+		var window = new SettingsWindow();
+		window.Show();
+	}
+
+	private void OnStreaming(object? sender, bool shouldStart)
+	{
+		if (shouldStart)
+		{
+			_streamingWindow = new StreamingWindow(_windowService.GetStreamingSpace());
+			_streamingWindow.Show();
+		}
+		else
+		{
+			_streamingWindow?.Close();
+		}
+
 	}
 }

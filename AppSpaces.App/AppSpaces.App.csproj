@@ -15,7 +15,7 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
     <PackageReference Include="H.Hooks" Version="1.6.0" />
-    <PackageReference Include="H.NotifyIcon.Wpf" Version="2.0.77" />
+    <PackageReference Include="H.NotifyIcon.Wpf" Version="2.0.86" />
     <PackageReference Include="WinMan.Windows" Version="1.0.1" />
   </ItemGroup>
 
