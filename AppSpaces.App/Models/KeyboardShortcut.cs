@@ -1,6 +1,4 @@
-﻿using H.Hooks;
-
-namespace AppSpaces.App.Models;
+﻿namespace AppSpaces.App.Models;
 
 public class KeyboardShortcut
 {

@@ -1,7 +1,5 @@
 ﻿using AppSpaces.App.Extensions;
 using AppSpaces.App.Models;
-using WinMan;
-using WinMan.Windows;
 
 namespace AppSpaces.App.Services;
 
@@ -51,20 +49,20 @@ public class WindowService
 		var spaceOfActiveWindow =
 			activeAppSpace.Spaces
 				.FirstOrDefault(s => s.Windows
-					.Any(w => w.Window.Handle == activeWindow.Handle));
+					.Any(w => w.Window?.Handle == activeWindow.Handle));
 		if (!(spaceOfActiveWindow?.Windows.Any() ?? false))
 		{
 			return;
 		}
 
-		var indexOfActiveWindow = spaceOfActiveWindow.Windows.FindIndex(w => w.Window.Handle == activeWindow.Handle);
+		var indexOfActiveWindow = spaceOfActiveWindow.Windows.FindIndex(w => w.Window?.Handle == activeWindow.Handle);
 		var activeIndex = indexOfActiveWindow + (moveForward ? 1 : -1);
 		if (activeIndex < 0) activeIndex = spaceOfActiveWindow.Windows.Count - 1;
 		else if (activeIndex >= spaceOfActiveWindow.Windows.Count) activeIndex = 0;
 
 		try
 		{
-			spaceOfActiveWindow.Windows[activeIndex].Window.ForceForegroundWindow();
+			spaceOfActiveWindow.Windows[activeIndex].Window?.ForceForegroundWindow();
 		}
 		catch (InvalidWindowReferenceException)
 		{
@@ -132,7 +130,7 @@ public class WindowService
 		// Remove this window from any spaces where it might already be registered in.
 		foreach (var otherSpace in ActiveAppSpace.Spaces)
 		{
-			otherSpace.Windows.RemoveAll(w => w.Window.Handle == window.Handle);
+			otherSpace.Windows.RemoveAll(w => w.Window?.Handle == window.Handle);
 			otherSpace.Apps.RemoveAll(a =>
 				a.SearchType == newAppSearch.SearchType && a.SearchQuery == newAppSearch.SearchQuery);
 		}

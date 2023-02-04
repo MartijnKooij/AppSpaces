@@ -1,9 +1,9 @@
 ﻿using System.Windows;
-using AppSpaces.App.Wpf.Services;
+using AppSpaces.App.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-namespace AppSpaces.App.Wpf;
+namespace AppSpaces.App;
 
 public partial class TrayIconViewModel : ObservableObject
 {

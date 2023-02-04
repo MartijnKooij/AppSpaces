@@ -3,8 +3,8 @@
 public class Settings
 {
 	public Guid ActiveAppSpaceId { get; set; } = Guid.Empty;
-	public List<AppSpace> AppSpaces { get; set; }
-	public List<KeyboardShortcut> KeyboardShortcuts { get; set; }
+	public List<AppSpace> AppSpaces { get; set; } = new();
+	public List<KeyboardShortcut> KeyboardShortcuts { get; set; } = new();
 
 	public bool Validate()
 	{

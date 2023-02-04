@@ -1,10 +1,10 @@
-﻿using AppSpaces.App.Models;
+﻿using System.Windows;
+using AppSpaces.App.Models;
 using AppSpaces.App.Services;
-using H.Hooks;
 
 namespace AppSpaces.App;
 
-public sealed partial class App
+public partial class App
 {
 	private readonly WindowService _windowService;
 	private Settings _settings = null!;
@@ -14,18 +14,31 @@ public sealed partial class App
 
 	public App()
 	{
-		InitializeComponent();
-
 		_windowService = new WindowService();
 	}
 
-	protected override async void OnLaunched(LaunchActivatedEventArgs args)
+	protected override async void OnStartup(StartupEventArgs e)
 	{
+		base.OnStartup(e);
+
 		_settings = await SettingsManager.LoadSettings();
 		_windowService.Start(_settings);
 
 		InitializeKeyboardManagement();
 		InitializeTrayIcon();
+
+		_trayIcon = FindResource("TrayIcon") as TaskbarIcon;
+		_trayIcon?.ForceCreate();
+	}
+
+	protected override void OnExit(ExitEventArgs e)
+	{
+		_windowService.Stop();
+		_keyboardHooks?.Stop();
+		_keyboardHooks?.Dispose();
+		_trayIcon?.Dispose();
+
+		base.OnExit(e);
 	}
 
 	private void InitializeKeyboardManagement()
@@ -61,36 +74,7 @@ public sealed partial class App
 
 	private void InitializeTrayIcon()
 	{
-		var settingsCommand = (XamlUICommand)Resources["Settings"];
-		settingsCommand.ExecuteRequested += ShowSettings;
-
-		var streamingCommand = (XamlUICommand)Resources["Streaming"];
-		streamingCommand.ExecuteRequested += StartStreaming;
-
-		var exitApplicationCommand = (XamlUICommand)Resources["ExitApplicationCommand"];
-		exitApplicationCommand.ExecuteRequested += ExitApplication;
-
 		_trayIcon = (TaskbarIcon)Resources["TrayIcon"];
 		_trayIcon.ForceCreate();
-	}
-
-	private void StartStreaming(XamlUICommand sender, ExecuteRequestedEventArgs args)
-	{
-		var window = new StreamingWindow(_windowService.GetStreamingSpace());
-		window.Show();
-	}
-
-	private static void ShowSettings(object? _, ExecuteRequestedEventArgs args)
-	{
-		var window = new SettingsWindow();
-		window.Show();
-	}
-
-	private void ExitApplication(object? _, ExecuteRequestedEventArgs args)
-	{
-		_windowService.Stop();
-		_keyboardHooks?.Stop();
-		_keyboardHooks?.Dispose();
-		_trayIcon?.Dispose();
 	}
 }

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
-using WinMan;
 
 namespace AppSpaces.App.Extensions;
 
@@ -35,7 +35,7 @@ public static class WindowExtensions
 	[DllImport("user32.dll")]
 	private static extern bool ShowWindow(IntPtr hWnd, uint nCmdShow);
 
-	public const uint SW_SHOW = 5;
+	private const uint SwShow = 5;
 
 	public static string GetProcessExe(this IWindow window)
 	{
@@ -65,13 +65,13 @@ public static class WindowExtensions
 		{
 			AttachThreadInput(foreThread, appThread, true);
 			BringWindowToTop(window.Handle);
-			ShowWindow(window.Handle, SW_SHOW);
+			ShowWindow(window.Handle, SwShow);
 			AttachThreadInput(foreThread, appThread, false);
 		}
 		else
 		{
 			BringWindowToTop(window.Handle);
-			ShowWindow(window.Handle, SW_SHOW);
+			ShowWindow(window.Handle, SwShow);
 		}
 	}
 }

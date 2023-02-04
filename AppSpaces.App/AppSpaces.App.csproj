@@ -1,52 +1,40 @@
-<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<OutputType>WinExe</OutputType>
-		<TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
-		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
-		<RootNamespace>AppSpaces.App</RootNamespace>
-		<ApplicationManifest>app.manifest</ApplicationManifest>
-		<Platforms>x86;x64;ARM64</Platforms>
-		<RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
-		<UseWinUI>true</UseWinUI>
-		<Nullable>enable</Nullable>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-	</PropertyGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<ItemGroup>
-		<Content Include="Assets\*.*" />
-	</ItemGroup>
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>Assets\app-icon.ico</ApplicationIcon>
+  </PropertyGroup>
 
-	<ItemGroup>
-		<None Remove="StreamingWindow.xaml" />
-		<None Remove="TrayIconResources.xaml" />
-	</ItemGroup>
+  <ItemGroup>
+    <None Remove="Assets\app-icon.ico" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="CommunityToolkit.WinUI" Version="7.1.2" />
-		<PackageReference Include="H.Hooks" Version="1.6.0" />
-		<PackageReference Include="H.NotifyIcon.WinUI" Version="2.0.77" />
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.221209.1" />
-		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.755" />
-		<PackageReference Include="WinMan.Windows" Version="1.0.1" />
-		<Manifest Include="$(ApplicationManifest)" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
+    <PackageReference Include="H.Hooks" Version="1.6.0" />
+    <PackageReference Include="H.NotifyIcon.Wpf" Version="2.0.77" />
+    <PackageReference Include="WinMan.Windows" Version="1.0.1" />
+  </ItemGroup>
 
-	<ItemGroup>
-	  <Reference Include="WinMan.Windows.DllImports">
-	    <HintPath>..\WinMan\WinMan.Windows.DllImports.dll</HintPath>
-	  </Reference>
-	</ItemGroup>
+  <ItemGroup>
+    <Reference Include="WinMan.Windows.DllImports">
+      <HintPath>..\WinMan\WinMan.Windows.DllImports.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 
-	<ItemGroup>
-	  <Page Update="StreamingWindow.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </Page>
-	</ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\app-icon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
 
-	<ItemGroup>
-		<Page Update="TrayIconResources.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</Page>
-	</ItemGroup>
+  <ItemGroup>
+    <Page Update="TrayIconResources.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+  </ItemGroup>
+
 </Project>
