@@ -18,7 +18,7 @@ public static class WindowExtensions
 
 			return Path.GetFileName(moduleFileName) ?? "";
 		}
-		catch (Win32Exception)
+		catch (Exception)
 		{
 			return "";
 		}
