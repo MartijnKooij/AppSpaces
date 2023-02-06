@@ -150,10 +150,18 @@ public class WindowService
 	{
 		if (!force && !ShouldMove(window)) return false;
 
-		window.SetState(WindowState.Restored);
-		window.SetPosition(new Rectangle(space.Location.X - window.FrameMargins.Left, space.Location.Y - window.FrameMargins.Top, space.Location.X + space.Location.Width + window.FrameMargins.Right, space.Location.Y + space.Location.Height + window.FrameMargins.Bottom));
+		try
+		{
+			window.SetState(WindowState.Restored);
+			window.SetPosition(new Rectangle(space.Location.X - window.FrameMargins.Left, space.Location.Y - window.FrameMargins.Top, space.Location.X + space.Location.Width + window.FrameMargins.Right, space.Location.Y + space.Location.Height + window.FrameMargins.Bottom));
 
-		return true;
+			return true;
+		}
+		catch (Exception )
+		{
+			// TODO: Possibly the window was closed, should we remove it from the in memory list of windows?
+			return false;
+		}
 	}
 
 	private static bool ShouldMove(IWindow window)
