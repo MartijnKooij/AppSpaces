@@ -22,11 +22,12 @@ public partial class App
 	{
 		base.OnStartup(e);
 
-		_settings = await SettingsManager.LoadSettings();
+		_settings = await SettingsService.LoadSettings();
 		_windowService.Start(_settings);
 
 		InitializeKeyboardManagement();
 		InitializeTrayIcon();
+		UpdateStreaming();
 	}
 
 	protected override void OnExit(ExitEventArgs e)
@@ -65,9 +66,24 @@ public partial class App
 		if (registeredShortcut == null) return;
 
 		_settings.ActiveAppSpaceId = registeredShortcut.AppSpaceId;
-		await SettingsManager.SaveSettings(_settings);
+		await SettingsService.SaveSettings(_settings);
 
+		// Open/Close streaming before re-arranging windows...
+		UpdateStreaming();
 		_windowService.SnapAllWindowsToRegisteredAppSpace();
+	}
+
+	private void UpdateStreaming()
+	{
+		if (!_windowService.HasStreamingSpace())
+		{
+			_streamingWindow?.Close();
+		}
+		else
+		{
+			_streamingWindow = new StreamingWindow(_windowService.GetStreamingSpace());
+			_streamingWindow.Show();
+		}
 	}
 
 	private void InitializeTrayIcon()
@@ -77,27 +93,11 @@ public partial class App
 
 		var trayIconContext = (TrayIconViewModel)_trayIcon.DataContext;
 		trayIconContext.Settings += OnShowSettings;
-		trayIconContext.Streaming += OnStreaming;
-
 	}
 
 	private static void OnShowSettings(object? sender, EventArgs eventArgs)
 	{
 		var window = new SettingsWindow();
 		window.Show();
-	}
-
-	private void OnStreaming(object? sender, bool shouldStart)
-	{
-		if (shouldStart)
-		{
-			_streamingWindow = new StreamingWindow(_windowService.GetStreamingSpace());
-			_streamingWindow.Show();
-		}
-		else
-		{
-			_streamingWindow?.Close();
-		}
-
 	}
 }

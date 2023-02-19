@@ -3,6 +3,7 @@
 public class Settings
 {
 	public Guid ActiveAppSpaceId { get; set; } = Guid.Empty;
+	public bool IsStreaming { get; set; } = false;
 	public List<AppSpace> AppSpaces { get; set; } = new();
 	public List<KeyboardShortcut> KeyboardShortcuts { get; set; } = new();
 
@@ -19,7 +20,6 @@ public class Settings
 			if (!appSpace.Spaces.Any()) return false;
 
 			ValidateHasPrimary(appSpace);
-			ValidateHasStreaming(appSpace);
 		}
 
 		return true;
@@ -37,21 +37,6 @@ public class Settings
 		if (!hasPrimary)
 		{
 			appSpace.Spaces.First().IsPrimary = true;
-		}
-	}
-
-	private static void ValidateHasStreaming(AppSpace appSpace)
-	{
-		var hasStreaming = false;
-		foreach (var space in appSpace.Spaces.Where(space => space.IsStreaming))
-		{
-			if (hasStreaming) space.IsStreaming = false;
-			hasStreaming = true;
-		}
-
-		if (!hasStreaming)
-		{
-			appSpace.Spaces.First().IsStreaming = true;
 		}
 	}
 }

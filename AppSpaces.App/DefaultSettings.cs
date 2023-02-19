@@ -1,4 +1,5 @@
 ﻿using AppSpaces.App.Models;
+using AppSpaces.App.Services;
 
 namespace AppSpaces.App;
 
@@ -20,12 +21,12 @@ public static class DefaultSettings
 				new()
 				{
 					AppSpaceId = defaultId0,
-					UserKey = Key.NumPad0
+					UserKey = Key.A
 				},
 				new()
 				{
 					AppSpaceId = defaultId1,
-					UserKey = Key.NumPad1
+					UserKey = Key.B
 				}
 			},
 			AppSpaces = new List<AppSpace>
@@ -47,7 +48,7 @@ public static class DefaultSettings
 								}
 							},
 							IsPrimary = true,
-							IsStreaming = true,
+							IsStreaming = false,
 							Location = new ScreenLocation(0, 0, workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 2, workspace.DisplayManager.PrimaryDisplay.WorkArea.Height)
 						},
 						new()
@@ -124,7 +125,7 @@ public static class DefaultSettings
 			}
 		};
 
-		await SettingsManager.SaveSettings(settings);
+		await SettingsService.SaveSettings(settings);
 
 		return settings;
 	}

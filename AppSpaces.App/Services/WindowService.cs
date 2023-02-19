@@ -70,6 +70,11 @@ public class WindowService
 		}
 	}
 
+	public bool HasStreamingSpace()
+	{
+		return ActiveAppSpace.Spaces.Any(s => s.IsStreaming);
+	}
+
 	public Space GetStreamingSpace()
 	{
 		return ActiveAppSpace.Spaces.Single(s => s.IsStreaming);
@@ -143,7 +148,7 @@ public class WindowService
 			MatchedAppSearch = matchedAppSearch
 		});
 		space.Apps.Add(newAppSearch);
-		await SettingsManager.SaveSettings(_settings);
+		await SettingsService.SaveSettings(_settings);
 	}
 
 	private static bool SnapToSpace(IWindow window, Space space, bool force = false)

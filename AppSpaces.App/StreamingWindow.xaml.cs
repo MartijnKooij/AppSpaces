@@ -1,10 +1,13 @@
 ﻿using System.Drawing;
 using System.Drawing.Imaging;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using AppSpaces.App.Models;
+using AppSpaces.App.Services;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
 using Rectangle = System.Drawing.Rectangle;
+using Size = System.Drawing.Size;
 
 namespace AppSpaces.App;
 
@@ -13,6 +16,7 @@ public partial class StreamingWindow
 	private readonly Space _streamingSpace;
 	private readonly Bitmap _lastCapturedBitmap;
 	private readonly Graphics _graphics;
+	private Settings? _settings;
 	private bool _isCapturing;
 	private bool _isClosing;
 
@@ -35,10 +39,19 @@ public partial class StreamingWindow
 		Closing += (_, _) =>
 		{
 			_isClosing = true;
+			_settings!.IsStreaming = false;
 			timer.Stop();
 			_lastCapturedBitmap.Dispose();
 			_graphics.Dispose();
 		};
+
+		Loaded += OnLoaded;
+	}
+
+	private async void OnLoaded(object sender, RoutedEventArgs e)
+	{
+		_settings = await SettingsService.LoadSettings();
+		_settings.IsStreaming = true;
 	}
 
 	private void RenderScreen()

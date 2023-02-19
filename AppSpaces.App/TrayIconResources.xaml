@@ -9,14 +9,6 @@
 		x:Key="SysTrayMenu"
 		>
 		<MenuItem
-			Header="Start Streaming"
-			Command="{Binding StartStreamingCommand}"
-			/>
-		<MenuItem
-			Header="Stop Streaming"
-			Command="{Binding StopStreamingCommand}"
-		/>
-		<MenuItem
 			Header="Settings..."
 			Command="{Binding ShowSettingsCommand}"
 			/>
