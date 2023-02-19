@@ -21,12 +21,12 @@ public static class DefaultSettings
 				new()
 				{
 					AppSpaceId = defaultId0,
-					UserKey = Key.A
+					UserKey = Key.NumPad0
 				},
 				new()
 				{
 					AppSpaceId = defaultId1,
-					UserKey = Key.B
+					UserKey = Key.NumPad1
 				}
 			},
 			AppSpaces = new List<AppSpace>
