@@ -76,7 +76,13 @@ public partial class StreamingWindow
 
 		try
 		{
-			_graphics.CopyFromScreen(_streamingSpace.Location.X, _streamingSpace.Location.Y, 0, 0, new Size(_streamingSpace.Location.Width, _streamingSpace.Location.Height), CopyPixelOperation.SourceCopy);
+			_graphics.CopyFromScreen(_streamingSpace.Location.X, _streamingSpace.Location.Y, 0, 0,
+				new Size(_streamingSpace.Location.Width, _streamingSpace.Location.Height),
+				CopyPixelOperation.SourceCopy);
+		}
+		catch (Exception)
+		{
+			// No update, fail silently
 		}
 		finally
 		{
