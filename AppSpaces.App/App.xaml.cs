@@ -75,13 +75,23 @@ public partial class App
 
 	private void UpdateStreaming()
 	{
+		if (!Dispatcher.CheckAccess())
+		{
+			Dispatcher.Invoke(UpdateStreaming);
+			return;
+		}
+
 		if (!_windowService.HasStreamingSpace())
 		{
 			_streamingWindow?.Close();
 		}
 		else
 		{
-			_streamingWindow = new StreamingWindow(_windowService.GetStreamingSpace());
+			if (_streamingWindow is not { IsVisible: true })
+			{
+				_streamingWindow = new StreamingWindow(_windowService.GetStreamingSpace());
+			}
+
 			_streamingWindow.Show();
 		}
 	}
