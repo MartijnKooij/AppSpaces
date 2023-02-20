@@ -27,8 +27,12 @@ public partial class StreamingWindow
 		_streamingSpace = streamingSpace;
 
 		Title = Constants.StreamingWindowTitle;
+		Width = _streamingSpace.Location.Width;
+		Height = _streamingSpace.Location.Height;
+		StreamingImage.Width = _streamingSpace.Location.Width - 2;
+		StreamingImage.Height = _streamingSpace.Location.Height -2;
 
-		_lastCapturedBitmap = new Bitmap(_streamingSpace.Location.Width, _streamingSpace.Location.Height, PixelFormat.Format24bppRgb);
+		_lastCapturedBitmap = new Bitmap(_streamingSpace.Location.Width-2, _streamingSpace.Location.Height-2, PixelFormat.Format24bppRgb);
 		_graphics = Graphics.FromImage(_lastCapturedBitmap);
 
 		var timer = new HiResTimer(33f);
@@ -54,19 +58,6 @@ public partial class StreamingWindow
 		_settings.IsStreaming = true;
 	}
 
-	private void RenderScreen()
-	{
-		if (_isClosing) return;
-		
-		if (!Dispatcher.CheckAccess())
-		{
-			Dispatcher.Invoke(RenderScreen);
-			return;
-		}
-
-		StreamingImage.Source = Convert(_lastCapturedBitmap);
-	}
-
 	private void CaptureScreen()
 	{
 		if (_isClosing) return;
@@ -76,8 +67,8 @@ public partial class StreamingWindow
 
 		try
 		{
-			_graphics.CopyFromScreen(_streamingSpace.Location.X, _streamingSpace.Location.Y, 0, 0,
-				new Size(_streamingSpace.Location.Width, _streamingSpace.Location.Height),
+			_graphics.CopyFromScreen(_streamingSpace.Location.X-1, _streamingSpace.Location.Y-1, 0, 0,
+				new Size(_streamingSpace.Location.Width-2, _streamingSpace.Location.Height-2),
 				CopyPixelOperation.SourceCopy);
 		}
 		catch (Exception)
@@ -90,7 +81,20 @@ public partial class StreamingWindow
 		}
 	}
 
-	private static BitmapSource Convert(Bitmap bitmap)
+	private void RenderScreen()
+	{
+		if (_isClosing) return;
+		
+		if (!Dispatcher.CheckAccess())
+		{
+			Dispatcher.Invoke(RenderScreen);
+			return;
+		}
+
+		StreamingImage.Source = ToBitmapSource(_lastCapturedBitmap);
+	}
+
+	private static BitmapSource ToBitmapSource(Bitmap bitmap)
 	{
 		var bitmapData = bitmap.LockBits(
 			new Rectangle(0, 0, bitmap.Width, bitmap.Height),

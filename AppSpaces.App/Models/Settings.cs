@@ -3,7 +3,7 @@
 public class Settings
 {
 	public Guid ActiveAppSpaceId { get; set; } = Guid.Empty;
-	public bool IsStreaming { get; set; } = false;
+	public bool IsStreaming { get; set; }
 	public List<AppSpace> AppSpaces { get; set; } = new();
 	public List<KeyboardShortcut> KeyboardShortcuts { get; set; } = new();
 
