@@ -74,9 +74,14 @@ public partial class StreamingWindow
 
 		_isCapturing = true;
 
-		_graphics.CopyFromScreen(_streamingSpace.Location.X, _streamingSpace.Location.Y, 0, 0, new Size(_streamingSpace.Location.Width, _streamingSpace.Location.Height), CopyPixelOperation.SourceCopy);
-
-		_isCapturing = false;
+		try
+		{
+			_graphics.CopyFromScreen(_streamingSpace.Location.X, _streamingSpace.Location.Y, 0, 0, new Size(_streamingSpace.Location.Width, _streamingSpace.Location.Height), CopyPixelOperation.SourceCopy);
+		}
+		finally
+		{
+			_isCapturing = false;
+		}
 	}
 
 	private static BitmapSource Convert(Bitmap bitmap)
