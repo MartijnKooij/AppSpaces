@@ -103,7 +103,7 @@ public class WindowService
 			return;
 		}
 
-		var matchedAppSearch = matchedWindowSpace?.Apps.Single(a => a.IsMatch(window));
+		var matchedAppSearch = matchedWindowSpace?.Apps.SingleOrDefault(a => a.IsMatch(window));
 		RegisterWindowInSpace(window, windowSpace, matchedAppSearch);
 	}
 
