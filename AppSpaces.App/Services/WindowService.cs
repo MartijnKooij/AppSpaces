@@ -21,6 +21,10 @@ public class WindowService
 	{
 		_settings = settings;
 		_workspace.Open();
+
+		_workspace.DisplayManager.Added += (_, _) => SnapAllWindowsToRegisteredAppSpace();
+		_workspace.DisplayManager.Removed += (_, _) => SnapAllWindowsToRegisteredAppSpace();
+		_workspace.DisplayManager.VirtualDisplayBoundsChanged += (_, _) => SnapAllWindowsToRegisteredAppSpace();
 	}
 
 	public void Stop()
