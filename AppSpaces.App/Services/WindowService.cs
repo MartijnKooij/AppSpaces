@@ -104,10 +104,14 @@ public class WindowService
 			{
 				SnapStreamingWindowToStreamingSpace(window);
 			}
+
 			return;
 		}
 
-		var matchedAppSearch = matchedWindowSpace?.Apps.SingleOrDefault(a => a.IsMatch(window));
+		// Only register explicit choices, so don't store when the app is moved to the default primary space
+		if (matchedWindowSpace == null) return;
+
+		var matchedAppSearch = matchedWindowSpace.Apps.SingleOrDefault(a => a.IsMatch(window));
 		RegisterWindowInSpace(window, windowSpace, matchedAppSearch);
 	}
 
