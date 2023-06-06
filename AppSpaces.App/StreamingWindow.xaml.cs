@@ -29,10 +29,12 @@ public partial class StreamingWindow
 		Title = Constants.StreamingWindowTitle;
 		Width = _streamingSpace.Location.Width;
 		Height = _streamingSpace.Location.Height;
-		StreamingImage.Width = _streamingSpace.Location.Width - 2;
-		StreamingImage.Height = _streamingSpace.Location.Height -2;
+		Grid.Width = _streamingSpace.Location.Width;
+		Grid.Height = _streamingSpace.Location.Height;
+		StreamingImage.Width = _streamingSpace.Location.Width;
+		StreamingImage.Height = _streamingSpace.Location.Height;
 
-		_lastCapturedBitmap = new Bitmap(_streamingSpace.Location.Width-2, _streamingSpace.Location.Height-2, PixelFormat.Format24bppRgb);
+		_lastCapturedBitmap = new Bitmap(_streamingSpace.Location.Width, _streamingSpace.Location.Height, PixelFormat.Format24bppRgb);
 		_graphics = Graphics.FromImage(_lastCapturedBitmap);
 
 		var timer = new HiResTimer(33f);
@@ -67,8 +69,8 @@ public partial class StreamingWindow
 
 		try
 		{
-			_graphics.CopyFromScreen(_streamingSpace.Location.X-1, _streamingSpace.Location.Y-1, 0, 0,
-				new Size(_streamingSpace.Location.Width-2, _streamingSpace.Location.Height-2),
+			_graphics.CopyFromScreen(_streamingSpace.Location.X, _streamingSpace.Location.Y, 0, 0,
+				new Size(_streamingSpace.Location.Width, _streamingSpace.Location.Height),
 				CopyPixelOperation.SourceCopy);
 		}
 		catch (Exception)
