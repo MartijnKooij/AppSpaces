@@ -177,7 +177,11 @@ public class WindowService
 		try
 		{
 			window.SetState(WindowState.Restored);
-			window.SetPosition(new Rectangle(space.Location.X - window.FrameMargins.Left, space.Location.Y - window.FrameMargins.Top, space.Location.X + space.Location.Width + window.FrameMargins.Right, space.Location.Y + space.Location.Height + window.FrameMargins.Bottom));
+			var left = Math.Max(0, space.Location.X - window.FrameMargins.Left);
+			var top = Math.Max(0, space.Location.Y - window.FrameMargins.Top);
+			var right = space.Location.X + space.Location.Width + Math.Min(10, window.FrameMargins.Right);
+			var bottom = space.Location.Y + space.Location.Height + Math.Min(10, window.FrameMargins.Bottom);
+			window.SetPosition(new Rectangle(left, top, right, bottom));
 
 			return true;
 		}
