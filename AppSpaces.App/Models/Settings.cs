@@ -1,28 +1,48 @@
-﻿namespace AppSpaces.App.Models;
+﻿using AppSpaces.App.Services;
+
+namespace AppSpaces.App.Models;
 
 public class Settings
 {
 	public Guid ActiveAppSpaceId { get; set; } = Guid.Empty;
 	public bool IsStreaming { get; set; }
-	public List<AppSpace> AppSpaces { get; set; } = new();
+	public List<WorkSpace> WorkSpaces { get; set; } = new();
 	public List<KeyboardShortcut> KeyboardShortcuts { get; set; } = new();
 
 	public bool Validate()
 	{
-		if (!AppSpaces.Any()) return false;
-		if (ActiveAppSpaceId == Guid.Empty)
+		if (!WorkSpaces.Any()) return false;
+		foreach (var workSpace in WorkSpaces)
 		{
-			ActiveAppSpaceId = AppSpaces.First().Id;
-		}
+			if (!workSpace.AppSpaces.Any()) return false;
+			if (ActiveAppSpaceId == Guid.Empty)
+			{
+				ActiveAppSpaceId = workSpace.AppSpaces.First().Id;
+			}
 
-		foreach (var appSpace in AppSpaces)
-		{
-			if (!appSpace.Spaces.Any()) return false;
+			foreach (var appSpace in workSpace.AppSpaces)
+			{
+				if (!appSpace.Spaces.Any()) return false;
 
-			ValidateHasPrimary(appSpace);
+				ValidateHasPrimary(appSpace);
+			}
 		}
 
 		return true;
+	}
+
+	public async Task<List<AppSpace>> GetAppSpacesForWorkSpace(IWorkspace winManWorkspace)
+	{
+		var workSpace = WorkSpaces.FirstOrDefault(w => w.WorkSpaceBounds.Equals(winManWorkspace.DisplayManager.VirtualDisplayBounds));
+		if (workSpace == null)
+		{
+			workSpace = DefaultSettings.CreateDefaultWorkSpace(winManWorkspace, Guid.NewGuid(), Guid.NewGuid());
+			WorkSpaces.Add(workSpace);
+
+			await SettingsService.SaveSettings(this);
+		}
+
+		return workSpace.AppSpaces;
 	}
 
 	private static void ValidateHasPrimary(AppSpace appSpace)

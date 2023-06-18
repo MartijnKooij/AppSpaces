@@ -54,12 +54,12 @@ public partial class App
 	{
 		if (e.Keys.Are(Key.LeftWindows, Key.Control, Key.Alt, Key.PageUp))
 		{
-			_windowService.ActivateWindowInSpace(false);
+			await _windowService.ActivateWindowInSpace(false);
 			return;
 		}
 		if (e.Keys.Are(Key.LeftWindows, Key.Control, Key.Alt, Key.PageDown))
 		{
-			_windowService.ActivateWindowInSpace(true);
+			await _windowService.ActivateWindowInSpace(true);
 			return;
 		}
 		var registeredShortcut = _settings.KeyboardShortcuts.SingleOrDefault(shortcut => e.Keys.Are(shortcut.AllKeys));
@@ -70,10 +70,10 @@ public partial class App
 
 		// Open/Close streaming before re-arranging windows...
 		UpdateStreaming();
-		_windowService.SnapAllWindowsToRegisteredAppSpace();
+		await _windowService.SnapAllWindowsToRegisteredAppSpace();
 	}
 
-	private void UpdateStreaming()
+	private async void UpdateStreaming()
 	{
 		if (!Dispatcher.CheckAccess())
 		{
@@ -81,7 +81,7 @@ public partial class App
 			return;
 		}
 
-		if (!_windowService.HasStreamingSpace())
+		if (!await _windowService.HasStreamingSpace())
 		{
 			_streamingWindow?.Close();
 		}
@@ -89,7 +89,7 @@ public partial class App
 		{
 			if (_streamingWindow is not { IsVisible: true })
 			{
-				_streamingWindow = new StreamingWindow(_windowService.GetStreamingSpace());
+				_streamingWindow = new StreamingWindow(await _windowService.GetStreamingSpace());
 			}
 
 			_streamingWindow.Show();
