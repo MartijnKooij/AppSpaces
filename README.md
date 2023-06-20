@@ -8,9 +8,12 @@ This is once again just a PoC based on an idea that popped in my head. Whether I
 - An App is an identifier to find an app, this can be by title or executable path.
 - A Space is an area on the screen and all the Apps assigned to it.
     An App can only be placed on a space once.
-- An AppSpace is a collection of Spaces
+- An AppSpace is a collection of Spaces.
     - An AppSpace cannot contain any duplicate apps, 1 app can be placed in 1 of its spaces only.
-- You can define multiple AppSpaces
+    - You can define multiple AppSpaces.
+- A WorkSpace is a certain screen setup with a unique dimension (combined screen resolution).
+    - You can define multiple unique workspaces.
+    - Each workspace can contain multiple AppSpaces.
 
 ## Use cases
 - When a new window is opened it should be placed in its designated space

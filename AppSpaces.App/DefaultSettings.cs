@@ -1,11 +1,10 @@
 ﻿using AppSpaces.App.Models;
-using AppSpaces.App.Services;
 
 namespace AppSpaces.App;
 
 public static class DefaultSettings
 {
-	public static async Task<Settings> Create()
+	public static Settings Create()
 	{
 		using var workspace = new Win32Workspace();
 		workspace.Open();
@@ -29,6 +28,21 @@ public static class DefaultSettings
 					UserKey = Key.NumPad1
 				}
 			},
+			WorkSpaces = new List<WorkSpace>
+			{
+				CreateDefaultWorkSpace(workspace, defaultId0, defaultId1)
+			}
+		};
+
+		return settings;
+	}
+
+	public static WorkSpace CreateDefaultWorkSpace(IWorkspace workspace, Guid defaultId0, Guid defaultId1)
+	{
+		var defaultWorkSpace = new WorkSpace
+		{
+			WorkSpaceBounds = WorkspaceBounds.Create(workspace.DisplayManager.VirtualDisplayBounds),
+			Label = $"WorkSpace {WorkspaceBounds.Create(workspace.DisplayManager.VirtualDisplayBounds)}",
 			AppSpaces = new List<AppSpace>
 			{
 				new()
@@ -68,7 +82,8 @@ public static class DefaultSettings
 							},
 							IsPrimary = false,
 							IsStreaming = false,
-							Location = new ScreenLocation(workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 2, 0, workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 1, workspace.DisplayManager.PrimaryDisplay.WorkArea.Height)
+							Location = new ScreenLocation(workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 2, 0, workspace.DisplayManager.PrimaryDisplay.WorkArea.Width / 3 * 1,
+								workspace.DisplayManager.PrimaryDisplay.WorkArea.Height)
 						}
 					}
 				},
@@ -118,15 +133,14 @@ public static class DefaultSettings
 							},
 							IsPrimary = true,
 							IsStreaming = false,
-							Location = new ScreenLocation(1920, 0, Math.Max(0, workspace.DisplayManager.PrimaryDisplay.WorkArea.Width - 1920), workspace.DisplayManager.PrimaryDisplay.WorkArea.Height)
+							Location = new ScreenLocation(1920, 0, Math.Max(0, workspace.DisplayManager.PrimaryDisplay.WorkArea.Width - 1920),
+								workspace.DisplayManager.PrimaryDisplay.WorkArea.Height)
 						}
 					}
 				}
 			}
 		};
 
-		await SettingsService.SaveSettings(settings);
-
-		return settings;
+		return defaultWorkSpace;
 	}
 }
