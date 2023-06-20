@@ -31,15 +31,16 @@ public class Settings
 		return true;
 	}
 
-	public async Task<List<AppSpace>> GetAppSpacesForWorkSpace(IWorkspace winManWorkspace)
+	public List<AppSpace> GetAppSpacesForWorkSpace(IWorkspace winManWorkspace)
 	{
 		var workSpace = WorkSpaces.FirstOrDefault(w => w.WorkSpaceBounds.Equals(winManWorkspace.DisplayManager.VirtualDisplayBounds));
 		if (workSpace == null)
 		{
-			workSpace = DefaultSettings.CreateDefaultWorkSpace(winManWorkspace, Guid.NewGuid(), Guid.NewGuid());
+			var defaultId0 = Guid.NewGuid();
+			workSpace = DefaultSettings.CreateDefaultWorkSpace(winManWorkspace, defaultId0, Guid.NewGuid());
 			WorkSpaces.Add(workSpace);
 
-			await SettingsService.SaveSettings(this);
+			ActiveAppSpaceId = defaultId0;
 		}
 
 		return workSpace.AppSpaces;

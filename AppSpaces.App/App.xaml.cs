@@ -62,12 +62,12 @@ public partial class App
 	{
 		if (e.Keys.Are(Key.LeftWindows, Key.Control, Key.Alt, Key.PageUp))
 		{
-			await _windowService.ActivateWindowInSpace(false);
+			_windowService.ActivateWindowInSpace(false);
 			return;
 		}
 		if (e.Keys.Are(Key.LeftWindows, Key.Control, Key.Alt, Key.PageDown))
 		{
-			await _windowService.ActivateWindowInSpace(true);
+			_windowService.ActivateWindowInSpace(true);
 			return;
 		}
 		var registeredShortcut = _settings.KeyboardShortcuts.SingleOrDefault(shortcut => e.Keys.Are(shortcut.AllKeys));
@@ -81,7 +81,7 @@ public partial class App
 		await _windowService.SnapAllWindowsToRegisteredAppSpace();
 	}
 
-	private async void UpdateStreaming()
+	private void UpdateStreaming()
 	{
 		if (!Dispatcher.CheckAccess())
 		{
@@ -89,7 +89,7 @@ public partial class App
 			return;
 		}
 
-		if (!await _windowService.HasStreamingSpace())
+		if (!_windowService.HasStreamingSpace())
 		{
 			_streamingWindow?.Close();
 		}
@@ -97,7 +97,7 @@ public partial class App
 		{
 			if (_streamingWindow is not { IsVisible: true })
 			{
-				_streamingWindow = new StreamingWindow(await _windowService.GetStreamingSpace());
+				_streamingWindow = new StreamingWindow(_windowService.GetStreamingSpace());
 			}
 
 			_streamingWindow.Show();

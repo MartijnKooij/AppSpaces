@@ -38,9 +38,9 @@ public class WindowService
 		}
 	}
 	
-	public async Task ActivateWindowInSpace(bool moveForward)
+	public void ActivateWindowInSpace(bool moveForward)
 	{
-		var activeAppSpace = await GetActiveAppSpace();
+		var activeAppSpace = GetActiveAppSpace();
 		var activeWindow = _workspace.FocusedWindow;
 		if (activeWindow == null)
 		{
@@ -72,23 +72,29 @@ public class WindowService
 		}
 	}
 
-	public async Task<bool> HasStreamingSpace()
+	public bool HasStreamingSpace()
 	{
-		var activeAppSpace = await GetActiveAppSpace();
+		var activeAppSpace = GetActiveAppSpace();
 		return activeAppSpace.Spaces.Any(s => s.IsStreaming);
 	}
 
-	public async Task<Space> GetStreamingSpace()
+	public Space GetStreamingSpace()
 	{
-		var activeAppSpace = await GetActiveAppSpace();
+		var activeAppSpace = GetActiveAppSpace();
 		return activeAppSpace.Spaces.Single(s => s.IsStreaming);
 	}
 
-	private async Task<AppSpace> GetActiveAppSpace()
+	private AppSpace GetActiveAppSpace()
 	{
-		var appSpaces = await _settings.GetAppSpacesForWorkSpace(_workspace);
+		var appSpaces = _settings.GetAppSpacesForWorkSpace(_workspace);
+		var activeAppSpace = appSpaces.SingleOrDefault(a => a.Id == _settings.ActiveAppSpaceId);
 
-		return appSpaces.Single(a => a.Id == _settings.ActiveAppSpaceId);
+		if (activeAppSpace != default) return activeAppSpace;
+
+		activeAppSpace = appSpaces.First();
+		_settings.ActiveAppSpaceId = activeAppSpace.Id;
+
+		return activeAppSpace;
 	}
 
 
@@ -101,7 +107,7 @@ public class WindowService
 
 	private async Task SnapToRegisteredAppSpace(IWindow window)
 	{
-		var activeAppSpace = await GetActiveAppSpace();
+		var activeAppSpace = GetActiveAppSpace();
 		var matchedWindowSpace = activeAppSpace.Spaces
 			.SingleOrDefault(s => s.Apps
 				.Any(a => a.IsMatch(window)));
@@ -111,22 +117,22 @@ public class WindowService
 		{
 			if (window.Title == Constants.StreamingWindowTitle)
 			{
-				await SnapStreamingWindowToStreamingSpace(window);
+				SnapStreamingWindowToStreamingSpace(window);
 			}
 
 			return;
 		}
 
-		// Only register explicit choices, so don't store when the app is moved to the default primary space
+		// Only register explicit choices, so not when the app is moved to the default primary space
 		if (matchedWindowSpace == null) return;
 
 		var matchedAppSearch = matchedWindowSpace.Apps.SingleOrDefault(a => a.IsMatch(window));
-		await RegisterWindowInSpace(window, windowSpace, matchedAppSearch);
+		await RegisterWindowInSpace(window, windowSpace, false, matchedAppSearch);
 	}
 
-	private async Task SnapStreamingWindowToStreamingSpace(IWindow streamingWindow)
+	private void SnapStreamingWindowToStreamingSpace(IWindow streamingWindow)
 	{
-		SnapToSpace(streamingWindow, await GetStreamingSpace(), true);
+		SnapToSpace(streamingWindow, GetStreamingSpace(), true);
 		streamingWindow.SendToBack();
 	}
 
@@ -134,16 +140,16 @@ public class WindowService
 	{
 		var pointerLocation = new ScreenLocation(_workspace.CursorLocation.X, _workspace.CursorLocation.Y, 1, 1);
 		var windowLocation = new ScreenLocation(window.Position.Left, window.Position.Top, window.Position.Width, window.Position.Height);
-		var activeAppSpace = await GetActiveAppSpace();
+		var activeAppSpace = GetActiveAppSpace();
 		var containingSpace = activeAppSpace.Spaces.SingleOrDefault(space => space.Location.HitTest(pointerLocation) || space.Location.HitTest(windowLocation));
 		if (containingSpace == null) return;
 
 		if (!SnapToSpace(window, containingSpace)) return;
 
-		await RegisterWindowInSpace(window, containingSpace);
+		await RegisterWindowInSpace(window, containingSpace, true);
 	}
 
-	private async Task RegisterWindowInSpace(IWindow window, Space space, AppSearch? matchedAppSearch = null)
+	private async Task RegisterWindowInSpace(IWindow window, Space space, bool shouldSaveSettings = false, AppSearch? matchedAppSearch = null)
 	{
 		var newAppSearch = matchedAppSearch ?? new AppSearch
 		{
@@ -152,7 +158,7 @@ public class WindowService
 		};
 
 		// Remove this window from any spaces where it might already be registered in.
-		var activeAppSpace = await GetActiveAppSpace();
+		var activeAppSpace = GetActiveAppSpace();
 		foreach (var otherSpace in activeAppSpace.Spaces)
 		{
 			otherSpace.Windows.RemoveAll(w => w.Window?.Handle == window.Handle);
@@ -167,7 +173,11 @@ public class WindowService
 			MatchedAppSearch = matchedAppSearch
 		});
 		space.Apps.Add(newAppSearch);
-		await SettingsService.SaveSettings(_settings);
+
+		if (shouldSaveSettings)
+		{
+			await SettingsService.SaveSettings(_settings);
+		}
 	}
 
 	private static bool SnapToSpace(IWindow window, Space space, bool force = false)
@@ -176,11 +186,12 @@ public class WindowService
 
 		try
 		{
-			window.SetState(WindowState.Restored);
 			var left = Math.Max(0, space.Location.X - window.FrameMargins.Left);
 			var top = Math.Max(0, space.Location.Y - window.FrameMargins.Top);
 			var right = space.Location.X + space.Location.Width + Math.Min(10, window.FrameMargins.Right);
 			var bottom = space.Location.Y + space.Location.Height + Math.Min(10, window.FrameMargins.Bottom);
+
+			window.SetState(WindowState.Restored);
 			window.SetPosition(new Rectangle(left, top, right, bottom));
 
 			return true;
