@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using AppSpaces.App.Models;
 using AppSpaces.App.Services;
+using Serilog;
 
 namespace AppSpaces.App;
 
@@ -16,6 +17,13 @@ public partial class App
 	public App()
 	{
 		_windowService = new WindowService();
+
+		Log.Logger = new LoggerConfiguration()
+			.MinimumLevel.Debug()
+			.WriteTo.File("Logs/AppSpaces.log", rollingInterval: RollingInterval.Day)
+			.CreateLogger();
+		
+		Log.Information("Starting AppSpaces...");
 	}
 
 	protected override async void OnStartup(StartupEventArgs e)
