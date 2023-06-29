@@ -1,5 +1,6 @@
 ﻿using AppSpaces.App.Extensions;
 using AppSpaces.App.Models;
+using PInvoke;
 
 namespace AppSpaces.App.Services;
 
@@ -188,11 +189,16 @@ public class WindowService
 		{
 			var left = space.Location.X - window.FrameMargins.Left;
 			var top = space.Location.Y - window.FrameMargins.Top;
-			var right = space.Location.X + space.Location.Width + window.FrameMargins.Right;
-			var bottom = space.Location.Y + space.Location.Height + window.FrameMargins.Bottom;
+			// var right = space.Location.X + space.Location.Width + window.FrameMargins.Right;
+			// var bottom = space.Location.Y + space.Location.Height + window.FrameMargins.Bottom;
+			var width = space.Location.Width + + window.FrameMargins.Left + window.FrameMargins.Right;
+			var height = space.Location.Height + window.FrameMargins.Top + window.FrameMargins.Bottom;
 
-			window.SetState(WindowState.Restored);
-			window.SetPosition(new Rectangle(left, top, right, bottom));
+			// window.SetState(WindowState.Restored);
+			// window.SetPosition(new Rectangle(left, top, right, bottom));
+
+			// User32.MoveWindow(window.Handle, left, top, width, height, true);
+			User32.SetWindowPos(window.Handle, IntPtr.Zero, left, top, width, height, User32.SetWindowPosFlags.SWP_SHOWWINDOW | User32.SetWindowPosFlags.SWP_NOSENDCHANGING);
 
 			return true;
 		}
