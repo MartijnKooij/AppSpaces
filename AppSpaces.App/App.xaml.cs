@@ -26,19 +26,6 @@ public partial class App
 			.CreateLogger();
 
 		Log.Information("Starting AppSpaces...");
-
-		RegisterStartOnBoot();
-	}
-
-	private static void RegisterStartOnBoot()
-	{
-		// TODO: This should probably be a setting users can choose to enable...
-		var exePath = GetCurrentProcess().MainModule?.FileName;
-		if (!string.IsNullOrEmpty(exePath) && exePath.EndsWith("exe"))
-		{
-			var key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-			key?.SetValue("AppSpaces", exePath);
-		}
 	}
 
 	protected override async void OnStartup(StartupEventArgs e)
@@ -51,6 +38,8 @@ public partial class App
 		InitializeKeyboardManagement();
 		InitializeTrayIcon();
 		UpdateStreaming();
+
+		RegisterStartOnBoot();
 	}
 
 	protected override void OnExit(ExitEventArgs e)
@@ -116,6 +105,23 @@ public partial class App
 			}
 
 			_streamingWindow.Show();
+		}
+	}
+
+	private void RegisterStartOnBoot()
+	{
+		var key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+
+		if (!_settings.AutomaticallyLaunch)
+		{
+			key?.DeleteValue("AppSpaces");
+			return;
+		}
+
+		var exePath = GetCurrentProcess().MainModule?.FileName;
+		if (!string.IsNullOrEmpty(exePath) && exePath.EndsWith("exe"))
+		{
+			key?.SetValue("AppSpaces", exePath);
 		}
 	}
 

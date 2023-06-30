@@ -15,6 +15,7 @@ public static class DefaultSettings
 		var settings = new Settings
 		{
 			ActiveAppSpaceId = defaultId0,
+			AutomaticallyLaunch = true,
 			KeyboardShortcuts = new List<KeyboardShortcut>
 			{
 				new()

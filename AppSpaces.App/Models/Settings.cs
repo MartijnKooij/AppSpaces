@@ -1,6 +1,4 @@
-﻿using AppSpaces.App.Services;
-
-namespace AppSpaces.App.Models;
+﻿namespace AppSpaces.App.Models;
 
 public class Settings
 {
@@ -8,6 +6,7 @@ public class Settings
 	public bool IsStreaming { get; set; }
 	public List<WorkSpace> WorkSpaces { get; set; } = new();
 	public List<KeyboardShortcut> KeyboardShortcuts { get; set; } = new();
+	public bool AutomaticallyLaunch { get; set; } = true;
 
 	public bool Validate()
 	{
