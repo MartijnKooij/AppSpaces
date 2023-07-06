@@ -8,15 +8,16 @@ public static class SettingsService
 {
 	private const string SettingsFile = "AppSpaces.settings.json";
 
+	private static string SettingsPath => Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AppSpaces", SettingsFile);
+
 	public static async Task<Settings> LoadSettings()
 	{
-		var settingsPath = Path.Join(Environment.SpecialFolder.LocalApplicationData.ToString(), SettingsFile);
-		if (!File.Exists(settingsPath))
+		if (!File.Exists(SettingsPath))
 		{
 			return await CreateAndStoreDefaultSettings();
 		}
 
-		var stream = File.OpenText(settingsPath);
+		var stream = File.OpenText(SettingsPath);
 		var settingsData = await stream.ReadToEndAsync();
 		if (string.IsNullOrEmpty(settingsData))
 		{
@@ -51,8 +52,7 @@ public static class SettingsService
 			throw new ApplicationException("Invalid settings provided", new ApplicationException(JsonSerializer.Serialize(settings)));
 		}
 
-		var settingsPath = Path.Join(Environment.SpecialFolder.LocalApplicationData.ToString(), SettingsFile);
-		var file = new FileInfo(settingsPath);
+		var file = new FileInfo(SettingsPath);
 		file.Directory?.Create();
 
 		var settingsData = JsonSerializer.Serialize(settings, new JsonSerializerOptions
@@ -60,7 +60,7 @@ public static class SettingsService
 			WriteIndented = true
 		});
 
-		await TrySaveSettings(settingsPath, settingsData);
+		await TrySaveSettings(SettingsPath, settingsData);
 	}
 
 	private static async Task TrySaveSettings(string path, string data)

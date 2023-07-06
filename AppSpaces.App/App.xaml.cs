@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.IO;
+using System.Windows;
 using AppSpaces.App.Models;
 using AppSpaces.App.Services;
 using Serilog;
@@ -20,9 +21,11 @@ public partial class App
 	{
 		_windowService = new WindowService();
 
+		var logFile = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AppSpaces", "Logs", "AppSpaces.log");
+
 		Log.Logger = new LoggerConfiguration()
 			.MinimumLevel.Debug()
-			.WriteTo.File("Logs/AppSpaces.log", rollingInterval: RollingInterval.Day)
+			.WriteTo.File(logFile, rollingInterval: RollingInterval.Day)
 			.CreateLogger();
 
 		Log.Information("Starting AppSpaces...");
