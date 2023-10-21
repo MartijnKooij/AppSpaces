@@ -13,18 +13,23 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
     <PackageReference Include="H.Hooks" Version="1.6.0" />
-    <PackageReference Include="H.NotifyIcon.Wpf" Version="2.0.86" />
+    <PackageReference Include="H.NotifyIcon.Wpf" Version="2.0.118" />
     <PackageReference Include="PInvoke.Gdi32" Version="0.7.124" />
     <PackageReference Include="PInvoke.Kernel32" Version="0.7.124" />
     <PackageReference Include="PInvoke.User32" Version="0.7.124" />
     <PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="WinMan.Windows" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="WinMan">
+      <HintPath>..\WinMan\WinMan.dll</HintPath>
+    </Reference>
+    <Reference Include="WinMan.Windows">
+      <HintPath>..\WinMan\WinMan.Windows.dll</HintPath>
+    </Reference>
     <Reference Include="WinMan.Windows.DllImports">
       <HintPath>..\WinMan\WinMan.Windows.DllImports.dll</HintPath>
     </Reference>
