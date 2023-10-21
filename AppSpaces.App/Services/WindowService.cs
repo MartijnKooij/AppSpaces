@@ -173,7 +173,10 @@ public class WindowService
 			Window = window,
 			MatchedAppSearch = matchedAppSearch
 		});
-		space.Apps.Add(newAppSearch);
+		if (space.Apps.All(a => a.SearchQuery != newAppSearch.SearchQuery))
+		{
+			space.Apps.Add(newAppSearch);
+		}
 
 		if (shouldSaveSettings)
 		{

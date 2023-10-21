@@ -24,10 +24,19 @@ public class Settings
 				if (!appSpace.Spaces.Any()) return false;
 
 				ValidateHasPrimary(appSpace);
+				RemoveDuplicates(appSpace);
 			}
 		}
 
 		return true;
+	}
+
+	private static void RemoveDuplicates(AppSpace appSpace)
+	{
+		foreach (var space in appSpace.Spaces)
+		{
+			space.Apps = space.Apps.DistinctBy(a => a.SearchQuery).ToList();
+		}
 	}
 
 	public List<AppSpace> GetAppSpacesForWorkSpace(IWorkspace winManWorkspace)
