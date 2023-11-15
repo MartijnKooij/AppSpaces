@@ -142,7 +142,7 @@ public class WindowService
 		var pointerLocation = new ScreenLocation(_workspace.CursorLocation.X, _workspace.CursorLocation.Y, 1, 1);
 		var windowLocation = new ScreenLocation(window.Position.Left, window.Position.Top, window.Position.Width, window.Position.Height);
 		var activeAppSpace = GetActiveAppSpace();
-		var containingSpace = activeAppSpace.Spaces.SingleOrDefault(space => space.Location.HitTest(pointerLocation) || space.Location.HitTest(windowLocation));
+		var containingSpace = activeAppSpace.Spaces.FirstOrDefault(space => space.Location.HitTest(pointerLocation) || space.Location.HitTest(windowLocation));
 		if (containingSpace == null) return;
 
 		if (!SnapToSpace(window, containingSpace)) return;
