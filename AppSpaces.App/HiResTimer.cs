@@ -11,7 +11,7 @@ public class HiResTimer
 	/// <summary>
 	/// The number of ticks per one millisecond.
 	/// </summary>
-	private static readonly float tickFrequency = 1000f / Stopwatch.Frequency;
+	private static readonly float TickFrequency = 1000f / Stopwatch.Frequency;
 
 	private volatile float interval;
 	private volatile float ignoreElapsedThreshold = float.PositiveInfinity;
@@ -106,7 +106,7 @@ public class HiResTimer
 		this.interval = interval;
 	}
 
-	private static float ElapsedHiRes(Stopwatch stopwatch) => stopwatch.ElapsedTicks * tickFrequency;
+	private static float ElapsedHiRes(Stopwatch stopwatch) => stopwatch.ElapsedTicks * TickFrequency;
 
 	/// <summary>
 	/// Starts raising the <see cref="Elapsed"/> event by enabling the timer.

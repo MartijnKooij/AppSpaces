@@ -13,29 +13,29 @@ namespace AppSpaces.App;
 
 public partial class StreamingWindow
 {
-	private readonly Space _streamingSpace;
-	private readonly Bitmap _lastCapturedBitmap;
-	private readonly Graphics _graphics;
-	private Settings? _settings;
-	private bool _isCapturing;
-	private bool _isClosing;
+	private readonly Space streamingSpace;
+	private readonly Bitmap lastCapturedBitmap;
+	private readonly Graphics graphics;
+	private Settings? settings;
+	private bool isCapturing;
+	private bool isClosing;
 
 	public StreamingWindow(Space streamingSpace)
 	{
 		InitializeComponent();
 
-		_streamingSpace = streamingSpace;
+		this.streamingSpace = streamingSpace;
 
 		Title = Constants.StreamingWindowTitle;
-		Width = _streamingSpace.Location.Width;
-		Height = _streamingSpace.Location.Height;
-		Grid.Width = _streamingSpace.Location.Width;
-		Grid.Height = _streamingSpace.Location.Height;
-		StreamingImage.Width = _streamingSpace.Location.Width;
-		StreamingImage.Height = _streamingSpace.Location.Height;
+		Width = this.streamingSpace.Location.Width;
+		Height = this.streamingSpace.Location.Height;
+		Grid.Width = this.streamingSpace.Location.Width;
+		Grid.Height = this.streamingSpace.Location.Height;
+		StreamingImage.Width = this.streamingSpace.Location.Width;
+		StreamingImage.Height = this.streamingSpace.Location.Height;
 
-		_lastCapturedBitmap = new Bitmap(_streamingSpace.Location.Width, _streamingSpace.Location.Height, PixelFormat.Format24bppRgb);
-		_graphics = Graphics.FromImage(_lastCapturedBitmap);
+		lastCapturedBitmap = new Bitmap(this.streamingSpace.Location.Width, this.streamingSpace.Location.Height, PixelFormat.Format24bppRgb);
+		graphics = Graphics.FromImage(lastCapturedBitmap);
 
 		var timer = new HiResTimer(33f);
 		timer.Elapsed += CaptureScreen;
@@ -44,11 +44,11 @@ public partial class StreamingWindow
 
 		Closing += (_, _) =>
 		{
-			_isClosing = true;
-			_settings!.IsStreaming = false;
+			isClosing = true;
+			settings!.IsStreaming = false;
 			timer.Stop();
-			_lastCapturedBitmap.Dispose();
-			_graphics.Dispose();
+			lastCapturedBitmap.Dispose();
+			graphics.Dispose();
 		};
 
 		Loaded += OnLoaded;
@@ -56,21 +56,21 @@ public partial class StreamingWindow
 
 	private async void OnLoaded(object sender, RoutedEventArgs e)
 	{
-		_settings = await SettingsService.LoadSettings();
-		_settings.IsStreaming = true;
+		settings = await SettingsService.LoadSettings();
+		settings.IsStreaming = true;
 	}
 
 	private void CaptureScreen()
 	{
-		if (_isClosing) return;
-		if (_isCapturing) return;
+		if (isClosing) return;
+		if (isCapturing) return;
 
-		_isCapturing = true;
+		isCapturing = true;
 
 		try
 		{
-			_graphics.CopyFromScreen(_streamingSpace.Location.X, _streamingSpace.Location.Y, 0, 0,
-				new Size(_streamingSpace.Location.Width, _streamingSpace.Location.Height),
+			graphics.CopyFromScreen(streamingSpace.Location.X, streamingSpace.Location.Y, 0, 0,
+				new Size(streamingSpace.Location.Width, streamingSpace.Location.Height),
 				CopyPixelOperation.SourceCopy);
 		}
 		catch (Exception)
@@ -79,13 +79,13 @@ public partial class StreamingWindow
 		}
 		finally
 		{
-			_isCapturing = false;
+			isCapturing = false;
 		}
 	}
 
 	private void RenderScreen()
 	{
-		if (_isClosing) return;
+		if (isClosing) return;
 		
 		if (!Dispatcher.CheckAccess())
 		{
@@ -93,7 +93,7 @@ public partial class StreamingWindow
 			return;
 		}
 
-		StreamingImage.Source = ToBitmapSource(_lastCapturedBitmap);
+		StreamingImage.Source = ToBitmapSource(lastCapturedBitmap);
 	}
 
 	private static BitmapSource ToBitmapSource(Bitmap bitmap)

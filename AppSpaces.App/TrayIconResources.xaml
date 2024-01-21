@@ -7,16 +7,8 @@
 	<ContextMenu
 		x:Shared="false"
 		x:Key="SysTrayMenu"
+		ItemsSource="{Binding MenuItems}"
 		>
-		<MenuItem
-			Header="Settings..."
-			Command="{Binding ShowSettingsCommand}"
-			/>
-		<Separator />
-		<MenuItem
-			Header="Exit"
-			Command="{Binding ExitApplicationCommand}"
-			/>
 	</ContextMenu>
 
 

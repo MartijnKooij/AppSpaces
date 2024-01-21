@@ -10,16 +10,16 @@ namespace AppSpaces.App;
 
 public partial class App
 {
-	private readonly WindowService _windowService;
-	private StreamingWindow? _streamingWindow;
-	private Settings _settings = null!;
+	private readonly WindowService windowService;
+	private StreamingWindow streamingWindow;
+	private Settings settings = null!;
 
-	private static TaskbarIcon? _trayIcon;
-	private static LowLevelKeyboardHook? _keyboardHooks;
+	private static TaskbarIcon _trayIcon;
+	private static LowLevelKeyboardHook _keyboardHooks;
 
 	public App()
 	{
-		_windowService = new WindowService();
+		windowService = new WindowService();
 
 		var logFile = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AppSpaces", "Logs", "AppSpaces.log");
 
@@ -35,8 +35,8 @@ public partial class App
 	{
 		base.OnStartup(e);
 
-		_settings = await SettingsService.LoadSettings();
-		_windowService.Start(_settings);
+		settings = await SettingsService.LoadSettings();
+		windowService.Start(settings);
 
 		InitializeKeyboardManagement();
 		InitializeTrayIcon();
@@ -47,7 +47,7 @@ public partial class App
 
 	protected override void OnExit(ExitEventArgs e)
 	{
-		_windowService.Stop();
+		windowService.Stop();
 		_keyboardHooks?.Stop();
 		_keyboardHooks?.Dispose();
 		_trayIcon?.Dispose();
@@ -65,27 +65,27 @@ public partial class App
 		_keyboardHooks.Start();
 	}
 
-	private async void HandleKeyUp(object? sender, KeyboardEventArgs e)
+	private async void HandleKeyUp(object sender, KeyboardEventArgs e)
 	{
 		if (e.Keys.Are(Key.LeftWindows, Key.Control, Key.Alt, Key.PageUp))
 		{
-			_windowService.ActivateWindowInSpace(false);
+			windowService.ActivateWindowInSpace(false);
 			return;
 		}
 		if (e.Keys.Are(Key.LeftWindows, Key.Control, Key.Alt, Key.PageDown))
 		{
-			_windowService.ActivateWindowInSpace(true);
+			windowService.ActivateWindowInSpace(true);
 			return;
 		}
-		var registeredShortcut = _settings.KeyboardShortcuts.SingleOrDefault(shortcut => e.Keys.Are(shortcut.AllKeys));
+		var registeredShortcut = settings.KeyboardShortcuts.SingleOrDefault(shortcut => e.Keys.Are(shortcut.AllKeys));
 		if (registeredShortcut == null) return;
 
-		_settings.ActiveAppSpaceId = registeredShortcut.AppSpaceId;
-		await SettingsService.SaveSettings(_settings);
+		settings.ActiveAppSpaceId = registeredShortcut.AppSpaceId;
+		await SettingsService.SaveSettings(settings);
 
 		// Open/Close streaming before re-arranging windows...
 		UpdateStreaming();
-		await _windowService.SnapAllWindowsToRegisteredAppSpace();
+		await windowService.SnapAllWindowsToRegisteredAppSpace();
 	}
 
 	private void UpdateStreaming()
@@ -96,18 +96,18 @@ public partial class App
 			return;
 		}
 
-		if (!_windowService.HasStreamingSpace())
+		if (!windowService.HasStreamingSpace())
 		{
-			_streamingWindow?.Close();
+			streamingWindow?.Close();
 		}
 		else
 		{
-			if (_streamingWindow is not { IsVisible: true })
+			if (streamingWindow is not { IsVisible: true })
 			{
-				_streamingWindow = new StreamingWindow(_windowService.GetStreamingSpace());
+				streamingWindow = new StreamingWindow(windowService.GetStreamingSpace());
 			}
 
-			_streamingWindow.Show();
+			streamingWindow.Show();
 		}
 	}
 
@@ -115,7 +115,7 @@ public partial class App
 	{
 		var key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
-		if (!_settings.AutomaticallyLaunch)
+		if (!settings.AutomaticallyLaunch)
 		{
 			key?.DeleteValue("AppSpaces");
 			return;
@@ -134,10 +134,23 @@ public partial class App
 		_trayIcon.ForceCreate();
 
 		var trayIconContext = (TrayIconViewModel)_trayIcon.DataContext;
-		trayIconContext.Settings += OnShowSettings;
+		trayIconContext.Initialize(settings, windowService);
+		
+		trayIconContext.OnSettings += OnShowOnSettings;
+		trayIconContext.OnActivateAppSpace += OnActivateAppSpace;
 	}
 
-	private static void OnShowSettings(object? sender, EventArgs eventArgs)
+	private async void OnActivateAppSpace(object sender, ActivateAppSpaceEventArgs e)
+	{
+		settings.ActiveAppSpaceId = e.AppSpaceId;
+		await SettingsService.SaveSettings(settings);
+
+		// Open/Close streaming before re-arranging windows...
+		UpdateStreaming();
+		await windowService.SnapAllWindowsToRegisteredAppSpace();
+	}
+
+	private static void OnShowOnSettings(object sender, EventArgs eventArgs)
 	{
 		var window = new SettingsWindow();
 		window.Show();
