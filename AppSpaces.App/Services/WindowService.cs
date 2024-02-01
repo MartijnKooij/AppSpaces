@@ -194,7 +194,7 @@ public class WindowService
 			var top = space.Location.Y - window.FrameMargins.Top;
 			// var right = space.Location.X + space.Location.Width + window.FrameMargins.Right;
 			// var bottom = space.Location.Y + space.Location.Height + window.FrameMargins.Bottom;
-			var width = space.Location.Width + + window.FrameMargins.Left + window.FrameMargins.Right;
+			var width = space.Location.Width + window.FrameMargins.Left + window.FrameMargins.Right;
 			var height = space.Location.Height + window.FrameMargins.Top + window.FrameMargins.Bottom;
 
 			// window.SetState(WindowState.Restored);
