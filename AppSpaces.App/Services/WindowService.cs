@@ -6,34 +6,34 @@ namespace AppSpaces.App.Services;
 
 public class WindowService
 {
-	private readonly IWorkspace _workspace;
-	private Settings _settings = null!;
+	public readonly IWorkspace Workspace;
+	private Settings settings = null!;
 
 	public WindowService()
 	{
-		_workspace = new Win32Workspace();
-		_workspace.WindowManaging += async (_, args) => await RegisterWindow(args.Source);
-		_workspace.WindowAdded += async (_, args) => await RegisterWindow(args.Source);
+		Workspace = new Win32Workspace();
+		Workspace.WindowManaging += async (_, args) => await RegisterWindow(args.Source);
+		Workspace.WindowAdded += async (_, args) => await RegisterWindow(args.Source);
 	}
 
 	public void Start(Settings settings)
 	{
-		_settings = settings;
-		_workspace.Open();
+		this.settings = settings;
+		Workspace.Open();
 
-		_workspace.DisplayManager.Added += async (_, _) => await SnapAllWindowsToRegisteredAppSpace();
-		_workspace.DisplayManager.Removed += async (_, _) => await SnapAllWindowsToRegisteredAppSpace();
-		_workspace.DisplayManager.VirtualDisplayBoundsChanged += async (_, _) => await SnapAllWindowsToRegisteredAppSpace();
+		Workspace.DisplayManager.Added += async (_, _) => await SnapAllWindowsToRegisteredAppSpace();
+		Workspace.DisplayManager.Removed += async (_, _) => await SnapAllWindowsToRegisteredAppSpace();
+		Workspace.DisplayManager.VirtualDisplayBoundsChanged += async (_, _) => await SnapAllWindowsToRegisteredAppSpace();
 	}
 
 	public void Stop()
 	{
-		_workspace.Dispose();
+		Workspace.Dispose();
 	}
 
 	public async Task SnapAllWindowsToRegisteredAppSpace()
 	{
-		foreach (var window in _workspace.GetSnapshot())
+		foreach (var window in Workspace.GetSnapshot())
 		{
 			await SnapToRegisteredAppSpace(window);
 		}
@@ -42,7 +42,7 @@ public class WindowService
 	public void ActivateWindowInSpace(bool moveForward)
 	{
 		var activeAppSpace = GetActiveAppSpace();
-		var activeWindow = _workspace.FocusedWindow;
+		var activeWindow = Workspace.FocusedWindow;
 		if (activeWindow == null)
 		{
 			activeWindow = activeAppSpace.Spaces.First().Windows.FirstOrDefault()?.Window;
@@ -87,13 +87,13 @@ public class WindowService
 
 	private AppSpace GetActiveAppSpace()
 	{
-		var appSpaces = _settings.GetAppSpacesForWorkSpace(_workspace);
-		var activeAppSpace = appSpaces.SingleOrDefault(a => a.Id == _settings.ActiveAppSpaceId);
+		var appSpaces = settings.GetAppSpacesForWorkSpace(Workspace);
+		var activeAppSpace = appSpaces.SingleOrDefault(a => a.Id == settings.ActiveAppSpaceId);
 
 		if (activeAppSpace != default) return activeAppSpace;
 
 		activeAppSpace = appSpaces.First();
-		_settings.ActiveAppSpaceId = activeAppSpace.Id;
+		settings.ActiveAppSpaceId = activeAppSpace.Id;
 
 		return activeAppSpace;
 	}
@@ -139,7 +139,7 @@ public class WindowService
 
 	private async Task SnapToContainingAppSpace(IWindow window)
 	{
-		var pointerLocation = new ScreenLocation(_workspace.CursorLocation.X, _workspace.CursorLocation.Y, 1, 1);
+		var pointerLocation = new ScreenLocation(Workspace.CursorLocation.X, Workspace.CursorLocation.Y, 1, 1);
 		var windowLocation = new ScreenLocation(window.Position.Left, window.Position.Top, window.Position.Width, window.Position.Height);
 		var activeAppSpace = GetActiveAppSpace();
 		var containingSpace = activeAppSpace.Spaces.FirstOrDefault(space => space.Location.HitTest(pointerLocation) || space.Location.HitTest(windowLocation));
@@ -180,7 +180,7 @@ public class WindowService
 
 		if (shouldSaveSettings)
 		{
-			await SettingsService.SaveSettings(_settings);
+			await SettingsService.SaveSettings(settings);
 		}
 	}
 
