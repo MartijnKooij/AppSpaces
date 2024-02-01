@@ -33,9 +33,11 @@ public class Settings
 
 	private static void RemoveDuplicates(AppSpace appSpace)
 	{
+		var uniqueApps = new HashSet<string>();
 		foreach (var space in appSpace.Spaces)
 		{
-			space.Apps = space.Apps.DistinctBy(a => a.SearchQuery).ToList();
+			var newApps = space.Apps.Where(app => uniqueApps.Add(app.SearchQuery.ToLowerInvariant())).ToList();
+			space.Apps = newApps;
 		}
 	}
 
