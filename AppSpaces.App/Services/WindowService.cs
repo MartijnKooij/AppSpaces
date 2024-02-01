@@ -16,9 +16,9 @@ public class WindowService
 		Workspace.WindowAdded += async (_, args) => await RegisterWindow(args.Source);
 	}
 
-	public void Start(Settings settings)
+	public void Start(Settings appSettings)
 	{
-		this.settings = settings;
+		settings = appSettings;
 		Workspace.Open();
 
 		Workspace.DisplayManager.Added += async (_, _) => await SnapAllWindowsToRegisteredAppSpace();
@@ -150,7 +150,7 @@ public class WindowService
 		await RegisterWindowInSpace(window, containingSpace, true);
 	}
 
-	private async Task RegisterWindowInSpace(IWindow window, Space space, bool shouldSaveSettings = false, AppSearch? matchedAppSearch = null)
+	private async Task RegisterWindowInSpace(IWindow window, Space space, bool shouldSaveSettings = false, AppSearch matchedAppSearch = null)
 	{
 		var newAppSearch = matchedAppSearch ?? new AppSearch
 		{
