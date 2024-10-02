@@ -127,7 +127,8 @@ public class WindowService
 		// Only register explicit choices, so not when the app is moved to the default primary space
 		if (matchedWindowSpace == null) return;
 
-		var matchedAppSearch = matchedWindowSpace.Apps.SingleOrDefault(a => a.IsMatch(window));
+		// TODO: Maybe improve, if 2 apps are stored, 1 with title and 1 with EXE than SingleOrDefault would have failed...
+		var matchedAppSearch = matchedWindowSpace.Apps.FirstOrDefault(a => a.IsMatch(window));
 		await RegisterWindowInSpace(window, windowSpace, false, matchedAppSearch);
 	}
 

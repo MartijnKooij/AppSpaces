@@ -38,6 +38,14 @@ public class Settings
 		{
 			var newApps = space.Apps.Where(app => uniqueApps.Add(app.SearchQuery.ToLowerInvariant())).ToList();
 			space.Apps = newApps;
+
+			foreach (var app in newApps)
+			{
+				foreach (var otherSpace in appSpace.Spaces.Where(s => !s.Location.Equals(space.Location)))
+				{
+					otherSpace.Apps.Remove(app);
+				}
+			}
 		}
 	}
 
